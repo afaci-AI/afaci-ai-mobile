@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Для локального API-хоста доверяем внутреннему CA Caddy
+         (Caddy Local Authority), которым подписан api.foodcraftsl.lab. -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="false">api.foodcraftsl.lab</domain>
+        <trust-anchors>
+            <certificates src="@raw/caddy_ca"/>
+            <certificates src="system"/>
+        </trust-anchors>
+    </domain-config>
+
+    <!-- Остальной трафик приложения — системные корни,
+         cleartext разрешён для dev-хостов (эмулятор 10.0.2.2). -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
+</network-security-config>
