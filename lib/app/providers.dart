@@ -7,6 +7,10 @@ import '../data/calculator_api.dart';
 import '../data/products_api.dart';
 import '../data/ranking_api.dart';
 import '../data/saved_api.dart';
+import '../features/update/download_service.dart';
+import '../features/update/install_service.dart';
+import '../features/update/update_api.dart';
+import '../features/update/update_controller.dart';
 import 'session.dart';
 
 /// Корневой DI-граф приложения (Шаг 1: DI в app/).
@@ -47,5 +51,19 @@ final StateNotifierProvider<SessionController, AuthState> sessionProvider =
       return SessionController(
         ref.watch(authApiProvider),
         ref.watch(tokenStoreProvider),
+      );
+    });
+
+final Provider<UpdateApi> updateApiProvider = Provider<UpdateApi>(
+  (ref) => UpdateApi(),
+);
+
+final StateNotifierProvider<AppUpdateController, UpdateState>
+appUpdateProvider =
+    StateNotifierProvider<AppUpdateController, UpdateState>((ref) {
+      return AppUpdateController(
+        updateApi: ref.watch(updateApiProvider),
+        downloadService: DownloadService(),
+        installService: InstallService(),
       );
     });
