@@ -18,6 +18,12 @@ dependencies:
   go_router: ^14.6.2
   flutter_secure_storage: ^9.2.2
   intl: ^0.20.2
+  package_info_plus: ^8.0.0
+  permission_handler: ^11.0.0
+  shared_preferences: ^2.2.0
+  open_filex: ^4.5.0
+  device_info_plus: ^11.0.0
+  path_provider: ^2.1.0
 
 dev_dependencies:
   flutter_test:
