@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- Для локального API-хоста доверяем внутреннему CA Caddy
-         (Caddy Local Authority), которым подписан api.foodcraftsl.lab. -->
+    <!-- Для локального API-хоста доверяем корневому CA Caddy
+         (Caddy Local Authority - 2026 ECC Root), которым подписан
+         api.foodcraftsl.lab. Промежуточный сертификат Caddy перевыпускает
+         еженедельно, поэтому вшивать его нельзя — только корень. -->
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="false">api.foodcraftsl.lab</domain>
         <trust-anchors>

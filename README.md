@@ -4,18 +4,21 @@
 пользовательские сценарии «site»-фронтенда: авторизация, калькулятор пищевой
 и биологической ценности, сохранённые рецептуры и их ранжирование.
 
-Построен по плану [`MOBILE_FLUTTER_PLAN.md`](../Планы%20/MOBILE_FLUTTER_PLAN.md).
+Построен по плану [`MOBILE_FLUTTER_PLAN.md`](../plan%20/MOBILE_FLUTTER_PLAN.md).
+
+Правила работы в этом репозитории — в [`../docs/AGENTS.md`](../docs/AGENTS.md).
 
 ## Запуск
 
-Базовый URL API задаётся через `--dart-define`. На Android-эмуляторе адрес
-локального бэкенда — `10.0.2.2` (значение по умолчанию), на iOS-симуляторе —
-`localhost`.
+Базовый URL API задаётся через `--dart-define`. По умолчанию —
+`https://api.foodcraftsl.lab` (dev-стенд, сертификат подписан локальным CA
+Caddy). Если бэкенд поднят локально на порту 8000, на Android-эмуляторе
+используйте `http://10.0.2.2:8000`, на iOS-симуляторе — `http://localhost:8000`.
 
 ```bash
 flutter pub get
 
-# Android-эмулятор (по умолчанию http://10.0.2.2:8000)
+# По умолчанию — https://api.foodcraftsl.lab
 flutter run
 
 # iOS-симулятор / другой адрес
@@ -29,7 +32,8 @@ flutter run --dart-define=API_BASE_URL=https://api.example.kg
 
 ## Архитектура
 
-Слои зеркалят backend Clean Architecture (см. корневой `CLAUDE.md`):
+Слои зеркалят backend Clean Architecture (см.
+[`../docs/architecture-decisions.md`](../docs/architecture-decisions.md)):
 
 ```
 lib/
@@ -42,7 +46,9 @@ lib/
 
 **Расчёт — только на сервере.** Формулы Липатова и конвертация
 мг → г/100 г белка живут в backend `domain/calculator/formulas.py`. Клиент их
-не дублирует (та же причина, что в `CLAUDE.md`): отображает ответ `/compute`.
+не дублирует (та же причина, что в
+[`../docs/architecture-decisions.md`](../docs/architecture-decisions.md)): отображает
+ответ `/compute`.
 
 **Поиск продуктов** идёт через `GET /table/products?product=...` (ILIKE на
 сервере). Регистронезависимость кириллицы — ответственность бэкенда
