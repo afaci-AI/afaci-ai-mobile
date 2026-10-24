@@ -189,7 +189,10 @@ class _UpdateSheet extends ConsumerWidget {
         if (!state.isForced) ...[
           const SizedBox(height: 8),
           TextButton(
-            onPressed: controller.skipUpdate,
+            onPressed: () {
+              Navigator.of(context).maybePop();
+              controller.skipUpdate();
+            },
             child: const Text('Позже'),
           ),
         ],
@@ -212,7 +215,12 @@ class _UpdateSheet extends ConsumerWidget {
       primary,
       const SizedBox(height: 8),
       TextButton(
-        onPressed: controller.skipUpdate,
+        // Диалог живёт в отдельном route — закрываем его, иначе после
+        // skipUpdate он остаётся на экране без данных (state.info == null).
+        onPressed: () {
+          Navigator.of(context).maybePop();
+          controller.skipUpdate();
+        },
         child: const Text('Напомнить позже'),
       ),
     ];

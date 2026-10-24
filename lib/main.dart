@@ -5,9 +5,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app/providers.dart';
 import 'app/router.dart';
 import 'app/theme.dart';
+import 'core/network/dev_trust.dart';
 import 'features/update/update_dialog.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DevTrust.install();
   runApp(const ProviderScope(child: AfaciApp()));
 }
 
@@ -41,11 +44,19 @@ class _AfaciAppState extends ConsumerState<AfaciApp> {
       if (next.hasPrompt &&
           !next.isForced &&
           (previous == null || !previous.hasPrompt)) {
-        showDialog<void>(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => const OptionalUpdateDialog(),
-        );
+        // Показываем после кадра и через контекст навигатора go_router:
+        // контекст самого AfaciApp находится выше MaterialApp и не видит
+        // MaterialLocalizations.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final dialogContext =
+              router.routerDelegate.navigatorKey.currentContext;
+          if (!mounted || dialogContext == null) return;
+          showDialog<void>(
+            context: dialogContext,
+            barrierDismissible: false,
+            builder: (_) => const OptionalUpdateDialog(),
+          );
+        });
       }
     });
 
