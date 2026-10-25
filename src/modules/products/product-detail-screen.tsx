@@ -14,7 +14,6 @@ import { Box } from '@/shared/ui/box'
 import { MacroChart } from '@/shared/ui/charts/macro-chart'
 import { Heading } from '@/shared/ui/heading'
 import {
-  Button,
   Card,
   EmptyState,
   ErrorState,
@@ -70,15 +69,7 @@ export function ProductDetailScreen() {
 
   return (
     <Screen edges={['top']}>
-      <Header title="Карточка продукта" />
-      <Box className="px-4 py-2">
-        <Button
-          label="К базе продуктов"
-          variant="outline"
-          onPress={goBack}
-          className="min-h-12"
-        />
-      </Box>
+      <Header title={product.data?.name ?? 'Продукт'} onBack={goBack} />
       {!id ? (
         <EmptyState title="Продукт не найден" />
       ) : error ? (

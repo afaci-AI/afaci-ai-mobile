@@ -48,7 +48,8 @@ export interface ProductFilters {
   region?: string
 }
 
-export const CATALOG_PAGE_SIZE = 30
+// Этап 9: список базы продуктов подгружается по 10 элементов при прокрутке.
+export const CATALOG_PAGE_SIZE = 10
 
 export function listProducts(
   filters: ProductFilters,
