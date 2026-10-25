@@ -27,6 +27,10 @@ const SECTIONS = [
 
 export default function AdminDashboardScreen() {
   const router = useRouter()
+  const goBack = () => {
+    if (router.canGoBack()) router.back()
+    else router.replace('/profile')
+  }
   const user = useSession((state) => state.user)
 
   return (
@@ -34,7 +38,7 @@ export default function AdminDashboardScreen() {
       <Header
         title="Админка"
         subtitle={user ? `${user.name} · ${user.email}` : undefined}
-        onBack={() => router.replace('/profile')}
+        onBack={goBack}
         className="-mx-4 -mt-4 mb-2"
       />
 

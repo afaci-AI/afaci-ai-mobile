@@ -21,6 +21,10 @@ import { VStack } from '@/shared/ui/vstack'
 /** Экран поиска продуктов: запрос уходит в общий store фильтров каталога. */
 export default function CatalogSearchScreen() {
   const router = useRouter()
+  const goBack = () => {
+    if (router.canGoBack()) router.back()
+    else router.replace('/database')
+  }
   const storedSearch = useCatalogFilters((state) => state.search)
   const setSearch = useCatalogFilters((state) => state.setSearch)
   const [text, setText] = useState(storedSearch)
@@ -73,7 +77,7 @@ export default function CatalogSearchScreen() {
       <Header
         title="Поиск продуктов"
         subtitle="Фильтры каталога применяются к результатам"
-        onBack={() => router.back()}
+        onBack={goBack}
       />
       <ProductGrid
         rows={rows}

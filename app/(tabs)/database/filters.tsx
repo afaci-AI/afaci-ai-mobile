@@ -25,6 +25,10 @@ import { VStack } from '@/shared/ui/vstack'
 /** Подробный выбор фильтров каталога: категории и подкатегории — чипами. */
 export default function CatalogFiltersScreen() {
   const router = useRouter()
+  const goBack = () => {
+    if (router.canGoBack()) router.back()
+    else router.replace('/database')
+  }
   // Поля выбираются по одному: селектор с новым объектом ломает снимок store.
   const storedCategoryId = useCatalogFilters((state) => state.categoryId)
   const storedSubcategoryId = useCatalogFilters((state) => state.subcategoryId)
@@ -52,7 +56,7 @@ export default function CatalogFiltersScreen() {
 
   function apply() {
     setSelection({ categoryId, subcategoryId, regionId })
-    router.back()
+    goBack()
   }
 
   function clear() {
@@ -104,7 +108,7 @@ export default function CatalogFiltersScreen() {
       <Header
         title="Фильтры"
         subtitle="Категория, подкатегория и регион"
-        onBack={() => router.back()}
+        onBack={goBack}
       />
 
       {dictionaries.isPending ? (
