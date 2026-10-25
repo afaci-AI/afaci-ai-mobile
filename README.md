@@ -12,7 +12,9 @@ Flutter-клиент удалён, каталог `rn/` расформирова
 
 ## Требования
 
-- Node 22 LTS (`fnm` уже настроен, версия пинится в `.node-version`).
+- Node 22 LTS, версия пинится в `.node-version`. `fnm` установлен, но не
+  подключён к shell-профилю, поэтому в каждом новом терминале нужен
+  `eval "$(fnm env)"` перед `fnm use 22`.
 - JDK 17 (`JAVA_HOME`), Android SDK 36.
 - Эмулятор `afaci_rooted` (образ `google_apis`, userdebug — нужен `adb root`).
 
@@ -26,6 +28,7 @@ Flutter-клиент удалён, каталог `rn/` расформирова
 
 ```bash
 cd /Users/erikomaraliev/Documents/Development/python/afaci_project_intelect/afaci_mobile
+eval "$(fnm env)"
 fnm use 22
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
 export ANDROID_HOME="$HOME/Library/Android/sdk"
@@ -121,6 +124,7 @@ adb shell am start -a android.intent.action.VIEW \
 ## Проверки
 
 ```bash
+eval "$(fnm env)"
 fnm use 22
 npm run lint
 npm run typecheck
