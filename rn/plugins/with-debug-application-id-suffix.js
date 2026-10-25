@@ -2,7 +2,7 @@ const { withAppBuildGradle } = require('expo/config-plugins')
 
 /**
  * Даёт debug-сборке отдельный applicationId (`kg.afaci.afaci_mobile.dev`),
- * чтобы RN и старое Flutter-приложение могли стоять на эмуляторе одновременно.
+ * чтобы debug- и release-сборки можно было установить одновременно.
  * Release сохраняет `kg.afaci.afaci_mobile`.
  */
 module.exports = function withDebugApplicationIdSuffix(config) {

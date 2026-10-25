@@ -1,7 +1,7 @@
 # AFACI Mobile — React Native
 
-Каркас мобильного приложения на Expo 58 + Expo Router. Заменяет Flutter-версию
-поэтапно; план и статусы — в [`../../plan/mobile.md`](../../plan/mobile.md).
+Каркас мобильного приложения на Expo 58 + Expo Router. План и статусы —
+в [`../../plan/mobile.md`](../../plan/mobile.md).
 
 ## Требования
 
@@ -72,8 +72,7 @@ npm run android -- --device emulator-5554
 
 Подставьте serial своего эмулятора. Команда собирает debug APK,
 устанавливает его и запускает Metro. Открывается **React Native AFACI** с
-пакетом `kg.afaci.afaci_mobile.dev`; Flutter-приложение имеет пакет без
-суффикса `.dev`.
+пакетом `kg.afaci.afaci_mobile.dev`.
 
 Для последующих запусков без изменений нативных зависимостей:
 
@@ -174,8 +173,8 @@ rn/
 ## Android-конфигурация
 
 - `applicationId`: `kg.afaci.afaci_mobile`, debug — `.dev` (config plugin
-  `plugins/with-debug-application-id-suffix.js`), поэтому Flutter- и
-  RN-приложение могут стоять на эмуляторе одновременно.
+  `plugins/with-debug-application-id-suffix.js`). Debug- и release-сборки
+  могут быть установлены одновременно.
 - `versionCode 2`, `versionName 2.0.0`.
 - Разрешения: `INTERNET`; overlay и legacy-storage заблокированы в `app.config.ts`.
 - `android/` пересоздаётся через `npx expo prebuild --platform android --clean`;
