@@ -1,15 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useFocusEffect, useRouter } from 'expo-router'
 import { Database, Eye, EyeOff } from 'lucide-react-native'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { Platform } from 'react-native'
+import { BackHandler, Platform } from 'react-native'
 import { z } from 'zod'
 
 import { useSession } from '@/shared/session/store'
 import { Box } from '@/shared/ui/box'
 import { Heading } from '@/shared/ui/heading'
 import { Icon } from '@/shared/ui/icon'
-import { Button, Card, FormField, Input, Screen } from '@/shared/ui/kit'
+import { Button, Card, FormField, Header, Input, Screen } from '@/shared/ui/kit'
 import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
 import { KeyboardAvoidingView } from '@/shared/ui/keyboard-avoiding-view'
@@ -23,7 +24,25 @@ const loginSchema = z.object({
 type LoginValues = z.infer<typeof loginSchema>
 
 export default function LoginScreen() {
+  const router = useRouter()
   const login = useSession((state) => state.login)
+  const goBack = useCallback(() => {
+    // История может вести в защищённую вкладку и снова открыть вход.
+    router.replace('/')
+  }, [router])
+
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        () => {
+          goBack()
+          return true
+        },
+      )
+      return () => subscription.remove()
+    }, [goBack]),
+  )
 
   const [showPassword, setShowPassword] = useState(false)
   const [serverError, setServerError] = useState('')
@@ -53,6 +72,7 @@ export default function LoginScreen() {
 
   return (
     <Screen>
+      <Header title="Вход" onBack={goBack} />
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}

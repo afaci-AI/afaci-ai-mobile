@@ -36,7 +36,7 @@ export function Header({
           accessibilityRole="button"
           accessibilityLabel="Назад"
           onPress={onBack}
-          className="-ml-2 h-10 w-10 items-center justify-center rounded-md data-[active=true]:bg-muted"
+          className="-ml-2 h-12 w-12 items-center justify-center rounded-md data-[active=true]:bg-muted"
         >
           <Icon as={ChevronLeft} size="lg" className="text-foreground" />
         </Pressable>
