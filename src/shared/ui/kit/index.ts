@@ -1,6 +1,7 @@
 export { Badge } from './badge'
 export { Button, ButtonSpinner, ButtonText } from './button'
 export { Card } from './card'
+export { Chip } from './chip'
 export { ConfirmDialog } from './confirm-dialog'
 export { EmptyState } from './empty-state'
 export { ErrorState } from './error-state'

@@ -20,9 +20,19 @@ Flutter-клиент удалён, каталог `rn/` расформирова
 
 ## Запуск
 
-Команды выполняются из `afaci_mobile`. Dev-стенд `https://api.foodcraftsl.lab`
-должен быть запущен на хосте. Нужен AVD **`afaci_rooted` на образе Google APIs
-(userdebug)**: образ Google Play не поддерживает `adb root`.
+Команды выполняются из `afaci_mobile`. Нужен AVD **`afaci_rooted` на образе
+Google APIs (userdebug)**: образ Google Play не поддерживает `adb root`, без
+которого не поставить CA dev-стенда.
+
+Что должно работать одновременно:
+
+| Компонент        | Где                | Как проверить                                                                                 |
+| ---------------- | ------------------ | --------------------------------------------------------------------------------------------- |
+| dev-стенд API    | хост, Docker       | `curl -s -o /dev/null -w '%{http_code}\n' https://api.foodcraftsl.lab/api/v1/regions` → `200` |
+| эмулятор         | отдельный терминал | `adb devices` → `emulator-5554  device`                                                       |
+| hosts + CA в нём | `dev-emulator.sh`  | см. [«Дев-стенд не виден из приложения»](#дев-стенд-не-виден-из-приложения)                   |
+| Metro            | отдельный терминал | `curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8081/status` → `200`               |
+| APK установлен   | эмулятор           | `adb shell pm list packages \| grep afaci` → `kg.afaci.afaci_mobile.dev`                      |
 
 ### 1. Подготовить терминал
 
@@ -36,9 +46,12 @@ export PATH="$JAVA_HOME/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:
 npm install
 ```
 
+`fnm` не подключён к shell-профилю, поэтому `eval "$(fnm env)"` нужен в
+**каждом** новом терминале — и для Metro, и для сборки.
+
 Если AVD ещё нет, создайте его в Android Studio → Device Manager → Create
-Virtual Device: выберите ARM64-образ **Google APIs**, SDK 36, имя
-`afaci_rooted`. Проверить наличие: `emulator -list-avds`.
+Virtual Device: ARM64-образ **Google APIs**, SDK 36, имя `afaci_rooted`.
+Проверить: `emulator -list-avds`.
 
 ### 2. Запустить root-эмулятор в отдельном терминале
 
@@ -52,79 +65,217 @@ Virtual Device: выберите ARM64-образ **Google APIs**, SDK 36, им�
 
 Дождитесь рабочего стола Android; оставьте этот терминал открытым.
 
-### 3. Проверить root и подключить dev-стенд
-
-В первом терминале:
+### 3. Подключить dev-стенд (после каждого старта эмулятора)
 
 ```bash
-adb devices -l
 adb wait-for-device
 adb root
 adb wait-for-device
-adb shell id
+adb shell id          # ожидается uid=0(root)
 ./scripts/dev-emulator.sh
-adb shell ping -c 1 api.foodcraftsl.lab
+adb shell ping -c 1 api.foodcraftsl.lab   # ожидается 10.0.2.2
 ```
 
-`id` должен показать `uid=0(root)`, а ping — адрес `10.0.2.2`.
-`dev-emulator.sh` настраивает hosts и системное доверие к dev-CA.
-Повторяйте скрипт после каждой перезагрузки эмулятора. Если подключено
-несколько устройств, сначала задайте `export ANDROID_SERIAL=emulator-5554`
-(подставьте serial из `adb devices`).
+`dev-emulator.sh` прописывает `10.0.2.2 api.foodcraftsl.lab` в
+`/system/etc/hosts` и вшивает корневой CA Caddy в системное хранилище
+Android — в mount namespace init **и каждого zygote**, с переметкой SELinux
+(см. [«Дев-стенд из эмулятора»](#dev-стенд-из-эмулятора)). Всё это живёт
+**до перезагрузки эмулятора**, поэтому скрипт повторяется после каждого
+старта AVD. Скрипт идемпотентен: лишний запуск безвреден.
 
-### 4. Собрать и запустить приложение
+Если подключено несколько устройств, сначала
+`export ANDROID_SERIAL=emulator-5554` (serial — из `adb devices`).
+
+### 4. Собрать и установить APK
+
+Нужно только при первом запуске и после изменения нативных зависимостей или
+конфигурации (`app.config.ts`, `plugins/`, `android/`):
 
 ```bash
 npm run android -- --device emulator-5554
 ```
 
-Подставьте serial своего эмулятора. Команда собирает debug APK и
-устанавливает его на устройство.
-
-**Запустить приложение она не сможет** и завершится ошибкой
+Команда соберёт debug APK и установит его, но **завершится ошибкой**
 `No development build (kg.afaci.afaci_mobile) for this project is installed`.
-Это ожидаемо и не является поломкой сборки: в проекте нет `expo-dev-client`,
-поэтому deep link `afaci://expo-development-client/?url=...`, которым Expo CLI
-открывает приложение, обрабатывать некому. Плюс у debug-сборки applicationId
-с суффиксом `.dev` (config plugin
-`plugins/with-debug-application-id-suffix.js`), а CLI ищет пакет из
-`app.config.ts`, то есть без суффикса. APK к этому моменту уже установлен —
-откройте приложение напрямую:
+Это ожидаемо, см. [«Сборка падает на “No development
+build”»](#сборка-падает-на-no-development-build). APK к этому моменту уже
+установлен.
 
-```bash
-npm run android:launch
-```
+### 5. Запустить Metro и приложение
 
-Открывается **React Native AFACI** с пакетом `kg.afaci.afaci_mobile.dev`.
-Debug- и release-сборки за счёт суффикса могут стоять на устройстве
-одновременно.
-
-Для последующих запусков без изменений нативных зависимостей пересборка не
-нужна — только Metro:
+В подготовленном терминале (Metro занимает его целиком):
 
 ```bash
 npm start
 ```
 
-и в другом подготовленном терминале:
+В другом подготовленном терминале:
 
 ```bash
 npm run android:launch
 ```
 
-**Не добавляйте `--localhost` к `npm start`.** С этим флагом Metro слушает
-только IPv6-loopback `[::1]:8081`, а приложение в эмуляторе ходит на
-`10.0.2.2:8081`, то есть на IPv4-loopback хоста. Соединение не
-устанавливается, бандл не скачивается, и вместо приложения появляется красный
-экран `Unable to load script`. Без флага Metro слушает все интерфейсы и
-эмулятор достучится. `adb reverse tcp:8081 tcp:8081` для бандла не нужен,
-приложение использует `10.0.2.2`.
+Откроется **React Native AFACI**, пакет `kg.afaci.afaci_mobile.dev`. Debug- и
+release-сборки за счёт суффикса `.dev` стоят на устройстве одновременно.
 
-Не запускайте второй Metro на том же порту. После установки новых нативных
-зависимостей повторите `npm run android`. Если root недоступен, проверьте
-образ AVD; если hosts не записывается — перезапустите эмулятор с
-`-writable-system`. При ошибке сети проверьте dev-стенд, ping и повторите
-`dev-emulator.sh`, затем перезапустите приложение.
+### Быстрый запуск, когда всё уже установлено
+
+```bash
+# терминал 1: эмулятор
+"$HOME/Library/Android/sdk/emulator/emulator" -avd afaci_rooted -writable-system -no-snapshot
+
+# терминал 2: подготовка + Metro
+cd afaci_mobile && eval "$(fnm env)" && fnm use 22
+adb wait-for-device && adb root && adb wait-for-device
+./scripts/dev-emulator.sh
+npm start
+
+# терминал 3: запуск приложения
+npm run android:launch
+```
+
+Если эмулятор не перезагружался, шаг с `adb root` и `dev-emulator.sh` можно
+пропустить — hosts и CA остаются на месте.
+
+## Диагностика
+
+### Экспресс-проверка
+
+Один блок, который отвечает, где именно обрыв:
+
+```bash
+cd afaci_mobile
+HASH=$(openssl x509 -inform PEM -subject_hash_old -in assets/certs/caddy_root.pem | head -1)
+ZPID=$(adb shell ps -A | awk '/zygote64/{print $2; exit}')
+
+echo "API с хоста:  $(curl -s -o /dev/null -w '%{http_code}' --max-time 5 https://api.foodcraftsl.lab/api/v1/regions)"
+echo "Metro:        $(curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://localhost:8081/status)"
+echo "Устройства:   $(adb devices | sed -n '2p')"
+echo "hosts:        $(adb shell grep foodcraftsl /system/etc/hosts)"
+echo "CA в zygote:  $(adb shell su 0 nsenter -t "$ZPID" -m ls /apex/com.android.conscrypt/cacerts/$HASH.0)"
+echo "Пакет:        $(adb shell pm list packages | grep afaci)"
+```
+
+Ошибки самого приложения:
+
+```bash
+adb logcat -d -t 500 | grep -E "ReactNativeJS|SSLHandshake|avc: denied"
+```
+
+### «Не удалось загрузить данные» / «Нет соединения с сервером»
+
+Это экран приложения при сетевой ошибке. Идти по шагам:
+
+1. **Бэкенд жив?** `curl https://api.foodcraftsl.lab/api/v1/regions` с хоста.
+   Если нет — поднять dev-стенд (`docker ps`: контейнер `devops-server`).
+2. **Что в логе?**
+   `adb logcat -d -t 500 | grep -E "ReactNativeJS|SSLHandshake"`.
+   - `SSLHandshakeException ... Trust anchor for certification path not
+found` → CA не виден приложению, см. следующий раздел.
+   - `Unable to resolve host` → не прописан hosts: `./scripts/dev-emulator.sh`.
+   - `401` / разлогин → истёк токен, нужно войти заново.
+3. **Перезапустить приложение** после любой правки доверия: OkHttp кэширует
+   соединения и TrustManager, на лету ничего не подхватится.
+   `adb shell am force-stop kg.afaci.afaci_mobile.dev && npm run android:launch`
+
+### Дев-стенд не виден из приложения
+
+Проверить, что CA лежит в namespace, из которого форкаются приложения, —
+именно здесь ломалось (см. [`ERROR.md`, п. 13](../ERROR.md)):
+
+```bash
+HASH=$(openssl x509 -inform PEM -subject_hash_old -in assets/certs/caddy_root.pem | head -1)
+ZPID=$(adb shell ps -A | awk '/zygote64/{print $2; exit}')
+adb shell su 0 nsenter -t "$ZPID" -m ls /apex/com.android.conscrypt/cacerts/$HASH.0
+```
+
+Файл должен существовать. Если `No such file` — эмулятор перезагружался,
+повторите `./scripts/dev-emulator.sh`. Если файл есть, а рукопожатие всё
+равно падает, проверьте отказы SELinux:
+
+```bash
+adb logcat -d -b all | grep "avc: denied" | grep cacerts
+```
+
+Отказы с `tcontext=u:object_r:appdomain_tmpfs:s0` означают, что сертификаты
+не переметили; это делает `dev-emulator.sh` — перезапустите его и приложение.
+
+Если CA перевыпущен на хосте, обновите `assets/certs/caddy_root.pem` (нужен
+именно **корневой** CA Caddy — промежуточный он перевыпускает еженедельно) и
+снова прогоните скрипт.
+
+### Красный экран `Unable to load script`
+
+Приложение не достучалось до Metro на `10.0.2.2:8081`.
+
+- Metro запущен? `curl http://localhost:8081/status`.
+- **Не добавляйте `--localhost` к `npm start`.** С этим флагом Metro слушает
+  только IPv6-loopback `[::1]:8081`, а эмулятор ходит на IPv4-loopback хоста
+  `10.0.2.2`. `adb reverse tcp:8081 tcp:8081` не нужен.
+- Не держите два Metro на одном порту: `lsof -nP -iTCP:8081 -sTCP:LISTEN`.
+
+Если в логе висит `Couldn't connect to packager, will silently retry`, а
+экран показывает старые данные — приложение работает на прошлом бандле;
+поднимите Metro и перезапустите приложение.
+
+### Сборка падает на «No development build»
+
+```
+No development build (kg.afaci.afaci_mobile) for this project is installed
+```
+
+Ожидаемое поведение, не поломка. В проекте нет `expo-dev-client`, поэтому
+deep link `afaci://expo-development-client/?url=...`, которым Expo CLI
+открывает приложение, обрабатывать некому. Плюс у debug-сборки
+`applicationId` с суффиксом `.dev` (config plugin
+`plugins/with-debug-application-id-suffix.js`), а CLI ищет пакет из
+`app.config.ts`, то есть без суффикса. APK уже установлен — запускайте
+`npm run android:launch`.
+
+По той же причине `npm start` запускается **без** `--dev-client`.
+
+### `Activity class ... does not exist`
+
+Класс активити — `kg.afaci.afaci_mobile.MainActivity`, а пакет —
+`kg.afaci.afaci_mobile.dev`: суффикс есть у applicationId, но не у имени
+класса. Готовая команда — `npm run android:launch`. Проверить вручную:
+
+```bash
+adb shell cmd package resolve-activity --brief kg.afaci.afaci_mobile.dev | tail -1
+```
+
+### `adb root` не даёт root
+
+`adb shell id` показывает `uid=2000(shell)` — AVD создан на образе Google
+Play. Пересоздайте его на образе **Google APIs** (userdebug) под именем
+`afaci_rooted`.
+
+### Не записывается `/system/etc/hosts`
+
+Эмулятор запущен без `-writable-system`. Закройте его и стартуйте командой
+из шага 2.
+
+### Подключено несколько устройств
+
+`adb` ругается `more than one device/emulator`:
+
+```bash
+adb devices
+export ANDROID_SERIAL=emulator-5554
+```
+
+### После перезагрузки эмулятора всё «отвалилось»
+
+Монтирование CA живёт в tmpfs и не переживает ребут. Порядок:
+`adb root` → `./scripts/dev-emulator.sh` → перезапуск приложения. Пересборка
+APK не нужна.
+
+### После смены зависимостей
+
+Изменились нативные пакеты, `app.config.ts`, `plugins/` или `android/` —
+нужна новая сборка: `npm run android -- --device emulator-5554`, затем
+`npm run android:launch`. Чистый prebuild:
+`npx expo prebuild --platform android --clean`.
 
 ## Скрипты
 
@@ -271,7 +422,7 @@ debug-сборка.
 
 ## Dev-стенд из эмулятора
 
-Схема из [`ERROR.md`, п. 10](../ERROR.md): эмулятор не видит хостовый
+Схема из [`ERROR.md`, п. 10 и 13](../ERROR.md): эмулятор не видит хостовый
 `/etc/hosts`, а сертификат dev-стенда подписан локальным CA Caddy.
 Всё делает `./scripts/dev-emulator.sh`:
 
@@ -280,6 +431,18 @@ debug-сборка.
 3. корневой CA Caddy в системный store. На Android 14+ (API 34+) store
    переехал в APEX, поэтому `tmpfs` монтируется поверх
    `/apex/com.android.conscrypt/cacerts` — живёт до перезагрузки.
+
+Про третий пункт важны две детали, без которых приложение CA не видит:
+
+- монтировать нужно в mount namespace init **и каждого** zygote
+  (`nsenter -t <pid> -m`): приложения форкаются от zygote и наследуют его
+  namespace, а не namespace init;
+- скопированные в tmpfs файлы получают контекст SELinux `appdomain_tmpfs`,
+  и `untrusted_app` запрещено их открывать, поэтому скрипт переметит их в
+  `u:object_r:system_security_cacerts_file:s0`.
+
+Обе ошибки дают один и тот же симптом — `SSLHandshakeException: Trust anchor
+for certification path not found` при живом бэкенде.
 
 OkHttp (на нём работает `fetch` в RN) не доверяет пользовательским
 сертификатам и не читает `network-security-config` в debug-сборке, поэтому

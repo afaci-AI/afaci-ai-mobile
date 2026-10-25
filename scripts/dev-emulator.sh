@@ -47,16 +47,30 @@ SDK="$("$ADB" shell getprop ro.build.version.sdk | tr -d '\r')"
 if [[ "$SDK" -ge 34 ]]; then
   cat >/tmp/afaci-install-ca.sh <<EOF
 set -e
+
+# Набор сертификатов готовим на обычной ФС: tmpfs из одного mount namespace
+# в другом не виден, а исходники нужны в каждом из них.
+rm -rf /data/local/tmp/cacerts
 mkdir -p /data/local/tmp/cacerts
+cp /system/etc/security/cacerts/* /data/local/tmp/cacerts/
 cp /data/local/tmp/$HASH.0 /data/local/tmp/cacerts/$HASH.0
-chmod 644 /data/local/tmp/cacerts/$HASH.0
-mount -t tmpfs tmpfs /apex/com.android.conscrypt/cacerts
-for f in /system/etc/security/cacerts/*; do
-  cp "\$f" /apex/com.android.conscrypt/cacerts/
-done
-cp /data/local/tmp/cacerts/$HASH.0 /apex/com.android.conscrypt/cacerts/
+
+cat >/data/local/tmp/afaci-mount-ca.sh <<'INNER'
+mount -t tmpfs tmpfs /apex/com.android.conscrypt/cacerts 2>/dev/null
+cp /data/local/tmp/cacerts/* /apex/com.android.conscrypt/cacerts/
 chown root:root /apex/com.android.conscrypt/cacerts/*
 chmod 644 /apex/com.android.conscrypt/cacerts/*
+# Без переметки файлы остаются appdomain_tmpfs, и SELinux запрещает
+# untrusted_app их читать: рукопожатие падает на «Trust anchor not found».
+chcon u:object_r:system_security_cacerts_file:s0 /apex/com.android.conscrypt/cacerts/*
+chcon u:object_r:system_security_cacerts_file:s0 /apex/com.android.conscrypt/cacerts
+INNER
+
+# Приложения форкаются от zygote и наследуют его mount namespace, а не
+# namespace init, поэтому монтировать нужно в каждом из них.
+for P in 1 \$(pgrep -f zygote); do
+  nsenter -t \$P -m /system/bin/sh /data/local/tmp/afaci-mount-ca.sh
+done
 EOF
   "$ADB" push /tmp/afaci-install-ca.sh /data/local/tmp/afaci-install-ca.sh >/dev/null
   "$ADB" shell su 0 sh /data/local/tmp/afaci-install-ca.sh
