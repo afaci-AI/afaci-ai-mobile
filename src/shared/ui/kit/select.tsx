@@ -37,6 +37,8 @@ export function Select({
   isDisabled,
   isInvalid,
 }: SelectProps) {
+  const selectedLabel = options.find((option) => option.value === value)?.label
+
   return (
     <GSSelect
       selectedValue={value ?? undefined}
@@ -44,8 +46,12 @@ export function Select({
       isDisabled={isDisabled}
       isInvalid={isInvalid}
     >
-      <SelectTrigger>
-        <SelectInput placeholder={placeholder} />
+      <SelectTrigger
+        size="xl"
+        accessibilityLabel={selectedLabel || placeholder}
+      >
+        {/* The core retains its internal label after a controlled value reset. */}
+        <SelectInput placeholder={placeholder} value={selectedLabel ?? ''} />
         <SelectIcon className="mr-2" as={ChevronDown} />
       </SelectTrigger>
 
@@ -62,6 +68,7 @@ export function Select({
                 key={option.value}
                 label={option.label}
                 value={option.value}
+                className="min-h-12"
               />
             ))}
           </SelectScrollView>

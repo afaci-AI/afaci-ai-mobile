@@ -1,11 +1,15 @@
 import { Tabs } from 'expo-router'
 import { Bookmark, Calculator, Database, Home, User } from 'lucide-react-native'
-import { useColorScheme } from 'react-native'
+import { useColorScheme, useWindowDimensions } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { getNavigatorColors } from '@/shared/theme/navigator-colors'
+import { Text } from '@/shared/ui/text'
 
 export default function TabsLayout() {
   const colors = getNavigatorColors(useColorScheme())
+  const { fontScale } = useWindowDimensions()
+  const insets = useSafeAreaInsets()
 
   return (
     <Tabs
@@ -13,13 +17,24 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: colors.foreground,
         tabBarInactiveTintColor: colors.mutedForeground,
+        tabBarLabel: ({ children, focused }) => (
+          <Text
+            size="xs"
+            numberOfLines={2}
+            className={
+              focused
+                ? 'w-full px-1 text-center text-foreground'
+                : 'w-full px-1 text-center text-muted-foreground'
+            }
+          >
+            {children}
+          </Text>
+        ),
         tabBarStyle: {
           backgroundColor: colors.background,
           borderTopColor: colors.border,
-        },
-        tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '500',
+          // Native navigation needs numeric height; reserve two scaled lines.
+          height: 36 + 32 * fontScale + insets.bottom,
         },
       }}
     >
@@ -31,7 +46,7 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="database/index"
+        name="database"
         options={{
           title: 'База',
           tabBarIcon: ({ color, size }) => (
@@ -64,6 +79,7 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
         }}
       />
+      <Tabs.Screen name="about" options={{ href: null }} />
     </Tabs>
   )
 }

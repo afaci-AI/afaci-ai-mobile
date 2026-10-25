@@ -4,7 +4,7 @@ import type { ColorSchemeName } from 'react-native'
  * Значения дублируют семантические токены из `src/global.css`.
  *
  * Нужны только там, где API нативного UI принимает цвет строкой, а не
- * className: панель табов, заголовки навигации, StatusBar. При изменении
+ * className: панель табов, заголовки навигации, StatusBar, графики. При изменении
  * токенов обновлять и здесь — это единственное место с «сырыми» цветами.
  */
 const light = {
@@ -16,6 +16,9 @@ const light = {
   primary: 'rgb(23, 23, 23)',
   primaryForeground: 'rgb(250, 250, 250)',
   muted: 'rgb(245, 245, 245)',
+  chart1: 'rgb(245, 73, 0)',
+  chart2: 'rgb(0, 150, 137)',
+  chart4: 'rgb(255, 185, 0)',
 }
 
 const dark = {
@@ -27,6 +30,9 @@ const dark = {
   primary: 'rgb(250, 250, 250)',
   primaryForeground: 'rgb(23, 23, 23)',
   muted: 'rgb(38, 38, 38)',
+  chart1: 'rgb(20, 71, 230)',
+  chart2: 'rgb(0, 188, 125)',
+  chart4: 'rgb(173, 70, 255)',
 }
 
 export type NavigatorColors = typeof light
