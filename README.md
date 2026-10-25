@@ -75,28 +75,50 @@ adb shell ping -c 1 api.foodcraftsl.lab
 ### 4. Собрать и запустить приложение
 
 ```bash
-adb reverse tcp:8081 tcp:8081
 npm run android -- --device emulator-5554
 ```
 
-Подставьте serial своего эмулятора. Команда собирает debug APK,
-устанавливает его и запускает Metro. Открывается **React Native AFACI** с
-пакетом `kg.afaci.afaci_mobile.dev`.
+Подставьте serial своего эмулятора. Команда собирает debug APK и
+устанавливает его на устройство.
 
-Для последующих запусков без изменений нативных зависимостей:
+**Запустить приложение она не сможет** и завершится ошибкой
+`No development build (kg.afaci.afaci_mobile) for this project is installed`.
+Это ожидаемо и не является поломкой сборки: в проекте нет `expo-dev-client`,
+поэтому deep link `afaci://expo-development-client/?url=...`, которым Expo CLI
+открывает приложение, обрабатывать некому. Плюс у debug-сборки applicationId
+с суффиксом `.dev` (config plugin
+`plugins/with-debug-application-id-suffix.js`), а CLI ищет пакет из
+`app.config.ts`, то есть без суффикса. APK к этому моменту уже установлен —
+откройте приложение напрямую:
 
 ```bash
-npm start -- --localhost
+npm run android:launch
 ```
 
-В другом подготовленном терминале:
+Открывается **React Native AFACI** с пакетом `kg.afaci.afaci_mobile.dev`.
+Debug- и release-сборки за счёт суффикса могут стоять на устройстве
+одновременно.
+
+Для последующих запусков без изменений нативных зависимостей пересборка не
+нужна — только Metro:
 
 ```bash
-adb reverse tcp:8081 tcp:8081
-adb shell am start -a android.intent.action.VIEW \
-  -d 'afaci://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081' \
-  -p kg.afaci.afaci_mobile.dev
+npm start
 ```
+
+и в другом подготовленном терминале:
+
+```bash
+npm run android:launch
+```
+
+**Не добавляйте `--localhost` к `npm start`.** С этим флагом Metro слушает
+только IPv6-loopback `[::1]:8081`, а приложение в эмуляторе ходит на
+`10.0.2.2:8081`, то есть на IPv4-loopback хоста. Соединение не
+устанавливается, бандл не скачивается, и вместо приложения появляется красный
+экран `Unable to load script`. Без флага Metro слушает все интерфейсы и
+эмулятор достучится. `adb reverse tcp:8081 tcp:8081` для бандла не нужен,
+приложение использует `10.0.2.2`.
 
 Не запускайте второй Metro на том же порту. После установки новых нативных
 зависимостей повторите `npm run android`. Если root недоступен, проверьте
@@ -106,16 +128,17 @@ adb shell am start -a android.intent.action.VIEW \
 
 ## Скрипты
 
-| Скрипт                      | Что делает                               |
-| --------------------------- | ---------------------------------------- |
-| `npm run android`           | сборка debug APK и установка на эмулятор |
-| `npm start`                 | Metro                                    |
-| `npm run lint`              | ESLint                                   |
-| `npm run typecheck`         | `tsc --noEmit`                           |
-| `npm run format`            | Prettier                                 |
-| `npm run format:check`      | Prettier в режиме проверки               |
-| `npm run api:types`         | генерация типов из OpenAPI dev-стенда    |
-| `./scripts/dev-emulator.sh` | hosts и CA dev-стенда в эмуляторе        |
+| Скрипт                      | Что делает                                     |
+| --------------------------- | ---------------------------------------------- |
+| `npm run android`           | сборка debug APK и установка на эмулятор       |
+| `npm run android:launch`    | запуск установленного приложения на устройстве |
+| `npm start`                 | Metro                                          |
+| `npm run lint`              | ESLint                                         |
+| `npm run typecheck`         | `tsc --noEmit`                                 |
+| `npm run format`            | Prettier                                       |
+| `npm run format:check`      | Prettier в режиме проверки                     |
+| `npm run api:types`         | генерация типов из OpenAPI dev-стенда          |
+| `./scripts/dev-emulator.sh` | hosts и CA dev-стенда в эмуляторе              |
 
 `api:types` по умолчанию берёт `https://api.foodcraftsl.lab/openapi.json` и
 подключает корневой CA Caddy через `NODE_EXTRA_CA_CERTS` из

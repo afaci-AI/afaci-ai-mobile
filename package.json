@@ -6,6 +6,7 @@
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
+    "android:launch": "adb shell am start -n kg.afaci.afaci_mobile.dev/kg.afaci.afaci_mobile.MainActivity",
     "prebuild": "expo prebuild --platform android",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
