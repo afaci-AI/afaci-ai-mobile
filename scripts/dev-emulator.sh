@@ -14,13 +14,13 @@
 # после ребута эмулятора скрипт нужно запустить снова.
 #
 # Требования: образ google_apis (userdebug) с доступным `adb root`.
-# Использование: rn/scripts/dev-emulator.sh
+# Использование: scripts/dev-emulator.sh
 
 set -euo pipefail
 
 ADB="${ADB:-$HOME/Library/Android/sdk/platform-tools/adb}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CERT="${CERT:-$SCRIPT_DIR/../../assets/certs/caddy_root.pem}"
+CERT="${CERT:-$SCRIPT_DIR/../assets/certs/caddy_root.pem}"
 HOST="${HOST:-api.foodcraftsl.lab}"
 HOST_IP="${HOST_IP:-10.0.2.2}"
 

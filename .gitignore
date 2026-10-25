@@ -14,11 +14,20 @@ web-build/
 build/
 .gradle/
 .kotlin/
+.cxx/
 *.class
 *.log
+*.orig.*
 *.tsbuildinfo
+expo-env.d.ts
 .metro-health-check*
+npm-debug.*
+yarn-debug.*
+yarn-error.*
 graphify-out/
+
+# Native projects: android/ коммитится после prebuild, iOS не собираем
+/ios
 
 # Local configuration and signing credentials
 .env*

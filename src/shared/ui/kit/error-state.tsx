@@ -31,6 +31,7 @@ export function ErrorState({
           label={retryLabel}
           variant="outline"
           size="sm"
+          className="min-h-12"
           onPress={onRetry}
         />
       ) : null}
