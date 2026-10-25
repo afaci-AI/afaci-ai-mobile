@@ -1,40 +1,50 @@
 import { Tabs } from 'expo-router'
+import { BottomTabBar, type BottomTabBarProps } from 'expo-router/js-tabs'
 import { Bookmark, Calculator, Database, Home, User } from 'lucide-react-native'
-import { useColorScheme, useWindowDimensions } from 'react-native'
+import { useColorScheme } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { getNavigatorColors } from '@/shared/theme/navigator-colors'
-import { Text } from '@/shared/ui/text'
+import { Box } from '@/shared/ui/box'
+import { FloatingTabButton } from '@/shared/ui/kit/floating-tab-button'
+
+function renderFloatingTabBar(props: BottomTabBarProps) {
+  return (
+    <Box className="bg-background">
+      <BottomTabBar {...props} />
+    </Box>
+  )
+}
 
 export default function TabsLayout() {
   const colors = getNavigatorColors(useColorScheme())
-  const { fontScale } = useWindowDimensions()
   const insets = useSafeAreaInsets()
+  const sideMargin = 16
 
   return (
     <Tabs
+      tabBar={renderFloatingTabBar}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.foreground,
+        tabBarActiveTintColor: colors.primaryForeground,
         tabBarInactiveTintColor: colors.mutedForeground,
-        tabBarLabel: ({ children, focused }) => (
-          <Text
-            size="xs"
-            numberOfLines={2}
-            className={
-              focused
-                ? 'w-full px-1 text-center text-foreground'
-                : 'w-full px-1 text-center text-muted-foreground'
-            }
-          >
-            {children}
-          </Text>
-        ),
+        tabBarButton: (props) => <FloatingTabButton {...props} />,
+        tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: colors.background,
-          borderTopColor: colors.border,
-          // Native navigation needs numeric height; reserve two scaled lines.
-          height: 36 + 32 * fontScale + insets.bottom,
+          // Native navigation accepts numeric styles, including safe-area gaps.
+          backgroundColor: colors.card,
+          borderColor: colors.border,
+          borderWidth: 1,
+          borderTopWidth: 1,
+          borderRadius: 32,
+          marginTop: 8,
+          marginLeft: sideMargin + insets.left,
+          marginRight: sideMargin + insets.right,
+          marginBottom: insets.bottom + 12,
+          paddingTop: 4,
+          paddingBottom: 4,
+          paddingHorizontal: 4,
+          height: 64,
         },
       }}
     >

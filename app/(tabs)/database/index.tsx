@@ -107,16 +107,6 @@ export default function DatabaseScreen() {
           onRetry={() => void query.refetch()}
         />
       ) : null}
-
-      {!query.isPending && !query.isError ? (
-        <Text
-          size="sm"
-          className="text-muted-foreground"
-          accessibilityLiveRegion="polite"
-        >
-          Загружено продуктов: {rows.length}
-        </Text>
-      ) : null}
     </VStack>
   )
 

@@ -121,7 +121,7 @@ export function HomeScreen() {
         </Text>
         <VStack space="sm">
           <Button
-            label="Открыть базу продуктов"
+            label="База данных продуктов питания"
             icon={Database}
             className="min-h-12"
             onPress={() => router.push('/database')}
