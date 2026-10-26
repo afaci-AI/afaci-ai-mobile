@@ -142,6 +142,7 @@ export interface SavedRecipe {
 }
 
 export interface SavedItem extends CalcItem {
+  product_name?: string | null
   sort_order?: number
   price_per_kg?: number | null
 }
