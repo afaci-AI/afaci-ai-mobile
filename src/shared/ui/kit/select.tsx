@@ -26,6 +26,8 @@ interface SelectProps {
   placeholder?: string
   isDisabled?: boolean
   isInvalid?: boolean
+  /** Compact selected value; trigger touch target stays 48 dp. */
+  selectedTextSize?: 'sm'
 }
 
 /** Выпадающий список на actionsheet — работает одинаково на Android и iOS. */
@@ -36,6 +38,7 @@ export function Select({
   placeholder = 'Выберите значение',
   isDisabled,
   isInvalid,
+  selectedTextSize,
 }: SelectProps) {
   const selectedLabel = options.find((option) => option.value === value)?.label
 
@@ -51,7 +54,13 @@ export function Select({
         accessibilityLabel={selectedLabel || placeholder}
       >
         {/* The core retains its internal label after a controlled value reset. */}
-        <SelectInput placeholder={placeholder} value={selectedLabel ?? ''} />
+        <SelectInput
+          placeholder={placeholder}
+          value={selectedLabel ?? ''}
+          className={
+            selectedTextSize === 'sm' ? 'text-sm font-sans' : undefined
+          }
+        />
         <SelectIcon className="mr-2" as={ChevronDown} />
       </SelectTrigger>
 

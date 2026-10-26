@@ -18,6 +18,7 @@ const light = {
   muted: 'rgb(245, 245, 245)',
   chart1: 'rgb(245, 73, 0)',
   chart2: 'rgb(0, 150, 137)',
+  chart3: 'rgb(16, 78, 100)',
   chart4: 'rgb(255, 185, 0)',
 }
 
@@ -32,6 +33,7 @@ const dark = {
   muted: 'rgb(38, 38, 38)',
   chart1: 'rgb(20, 71, 230)',
   chart2: 'rgb(0, 188, 125)',
+  chart3: 'rgb(254, 154, 0)',
   chart4: 'rgb(173, 70, 255)',
 }
 
