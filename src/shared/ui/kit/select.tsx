@@ -1,4 +1,5 @@
-import { ChevronDown } from 'lucide-react-native'
+import { ChevronDown, type LucideIcon } from 'lucide-react-native'
+import { cn } from '@/shared/lib/cn'
 
 import {
   Select as GSSelect,
@@ -20,6 +21,7 @@ export interface SelectOption {
 }
 
 interface SelectProps {
+  leadingIcon?: LucideIcon
   options: SelectOption[]
   value: string | null
   onChange: (value: string) => void
@@ -32,6 +34,7 @@ interface SelectProps {
 
 /** Выпадающий список на actionsheet — работает одинаково на Android и iOS. */
 export function Select({
+  leadingIcon,
   options,
   value,
   onChange,
@@ -53,13 +56,21 @@ export function Select({
         size="xl"
         accessibilityLabel={selectedLabel || placeholder}
       >
+        {leadingIcon ? (
+          <SelectIcon
+            as={leadingIcon}
+            accessible={false}
+            className="ml-3 h-5 w-5 text-muted-foreground"
+          />
+        ) : null}
         {/* The core retains its internal label after a controlled value reset. */}
         <SelectInput
           placeholder={placeholder}
           value={selectedLabel ?? ''}
-          className={
-            selectedTextSize === 'sm' ? 'text-sm font-sans' : undefined
-          }
+          className={cn(
+            selectedTextSize === 'sm' && 'text-sm font-sans',
+            leadingIcon && 'flex-1 min-w-0',
+          )}
         />
         <SelectIcon className="mr-2" as={ChevronDown} />
       </SelectTrigger>

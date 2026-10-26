@@ -124,11 +124,13 @@ export function CalculatorScreen() {
       if (!active()) return
       const rows = await Promise.all(
         recipe.items.map(async (item) => {
-          const product = await calculatorApi.product(item.product_id)
+          const productName =
+            item.product_name ||
+            (await calculatorApi.product(item.product_id)).name
           return {
             key: rowKey(),
             product_id: item.product_id,
-            product_name: product.name,
+            product_name: productName,
             amount: String(item.amount_g),
             price: item.price_per_kg == null ? '' : String(item.price_per_kg),
           }
@@ -148,8 +150,11 @@ export function CalculatorScreen() {
   }
   const loadedEdit = useRef<string | null>(null)
   useEffect(() => {
+    if (!edit) loadedEdit.current = null
     if (!busy && edit && loadedEdit.current !== edit) {
       loadedEdit.current = edit
+      // Consume the navigation intent so reopening the same recipe reloads it.
+      router.setParams({ edit: undefined })
       void loadRecipe(edit)
     }
   })
@@ -217,6 +222,9 @@ export function CalculatorScreen() {
       setSaveOpen(false)
       void queryClient.invalidateQueries({ queryKey: ['calculator', 'saved'] })
       void queryClient.invalidateQueries({ queryKey: ['calculator', 'groups'] })
+      void queryClient.invalidateQueries({
+        queryKey: ['saved', 'detail', recipe.id],
+      })
       toast.success({ title: 'Рецептура сохранена' })
     } catch (e) {
       if (active()) setSaveError(errorMessage(e))

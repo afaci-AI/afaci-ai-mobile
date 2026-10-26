@@ -1,0 +1,26 @@
+# Never index local configuration, credentials, or signing material.
+.env*
+**/.env*
+*.keystore
+*.jks
+*.pem
+*.p8
+*.p12
+*.key
+*.mobileprovision
+credentials*
+**/credentials*
+local.properties
+.aws/
+.ssh/
+
+# Dependencies and generated artifacts are not application source.
+node_modules/
+.expo/
+dist/
+web-build/
+build/
+.gradle/
+.kotlin/
+.cxx/
+graphify-out/
