@@ -5,6 +5,7 @@ import { useState } from 'react'
 
 import type { UserRole } from '@/shared/api/models'
 import { formatDateTime } from '@/shared/lib/format'
+import { hasPermission } from '@/shared/session/permissions'
 import { useSession } from '@/shared/session/store'
 import { Box } from '@/shared/ui/box'
 import { Heading } from '@/shared/ui/heading'
@@ -101,22 +102,26 @@ export default function ProfileScreen() {
             </Box>
           </Card>
 
-          <Card className="p-0">
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => router.push('/admin')}
-              className="flex-row items-center gap-3 p-4 data-[active=true]:bg-muted"
-            >
-              <Icon as={Shield} className="text-foreground" />
-              <Box className="flex-1">
-                <Text className="text-card-foreground">Админка</Text>
-                <Text size="sm" className="text-muted-foreground">
-                  Продукты, словари, пользователи
-                </Text>
-              </Box>
-              <Icon as={ChevronRight} className="text-muted-foreground" />
-            </Pressable>
-          </Card>
+          {hasPermission(user.role, 'canEditProducts') ? (
+            <Card className="p-0">
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => router.push('/admin')}
+                className="flex-row items-center gap-3 p-4 data-[active=true]:bg-muted"
+              >
+                <Icon as={Shield} className="text-foreground" />
+                <Box className="flex-1">
+                  <Text className="text-card-foreground">Админка</Text>
+                  <Text size="sm" className="text-muted-foreground">
+                    {user.role === 'admin'
+                      ? 'Продукты, словари, пользователи'
+                      : 'Продукты и словари'}
+                  </Text>
+                </Box>
+                <Icon as={ChevronRight} className="text-muted-foreground" />
+              </Pressable>
+            </Card>
+          ) : null}
 
           <Button
             label="Выйти"
