@@ -37,6 +37,7 @@ export function ProductFormScreen({ edit = false }: { edit?: boolean }) {
     <ScrollScreen>
       <Header
         title={edit ? 'Редактировать продукт' : 'Новый продукт'}
+        subtitle={edit ? undefined : 'Шаг 1 из 2 · Основные данные'}
         onBack={back}
       />
       {!hasPermission(role, 'canEditProducts') ? (
@@ -101,15 +102,21 @@ function ProductForm({
         ? updateProduct(product.id, payload)
         : createProduct(payload)
     },
-    onSuccess: async () => {
+    onSuccess: (savedProduct) => {
       if (!active()) return
-      await invalidateAdminProducts(client)
-      if (active()) {
-        toast.success({
-          title: product ? 'Продукт сохранён' : 'Продукт создан',
+      // Creation is already committed. Leave the form before background refresh
+      // so returning or a failed refresh cannot submit the same product again.
+      client.setQueryData(['catalog', 'product', savedProduct.id], savedProduct)
+      toast.success({
+        title: product ? 'Продукт сохранён' : 'Продукт создан',
+      })
+      if (product) onBack()
+      else
+        router.replace({
+          pathname: '/admin/products/[id]/nutrients',
+          params: { id: savedProduct.id },
         })
-        onBack()
-      }
+      void invalidateAdminProducts(client).catch(() => undefined)
     },
   })
   const options = (values: { id: string; name: string }[]) =>
@@ -182,7 +189,7 @@ function ProductForm({
         </Text>
       ) : null}
       <Button
-        label="Сохранить"
+        label={product ? 'Сохранить' : 'Далее: нутриенты'}
         isLoading={save.isPending}
         onPress={() => {
           setSubmitted(true)

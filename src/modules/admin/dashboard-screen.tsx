@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { ChevronRight, Plus, RefreshCw } from 'lucide-react-native'
-import { useState } from 'react'
 
 import type { DictionaryEntry, Product } from '@/modules/catalog/api'
 import { request } from '@/shared/api/client'
@@ -20,14 +19,6 @@ import {
   LoadingView,
   ScrollScreen,
 } from '@/shared/ui/kit'
-import {
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-} from '@/shared/ui/modal'
 import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
 
@@ -39,7 +30,6 @@ export default function AdminDashboardScreen() {
     user?.role,
     'canManageDictionaries',
   )
-  const [dictionary, setDictionary] = useState<string | null>(null)
   const dashboard = useQuery({
     queryKey: ['admin', 'dashboard'],
     queryFn: async () => {
@@ -69,7 +59,7 @@ export default function AdminDashboardScreen() {
     <ScrollScreen>
       <Header
         title="Админка"
-        subtitle="Продукты и состав"
+        subtitle="Управление системой"
         onBack={() =>
           router.canGoBack() ? router.back() : router.replace('/profile')
         }
@@ -154,42 +144,46 @@ export default function AdminDashboardScreen() {
                 Словари
               </Heading>
               {[
-                'Категории',
-                'Подкатегории',
-                'Регионы',
-                'Названия нутриентов',
-                'Типы нутриентов',
-                'Единицы измерения',
-              ].map((name) => (
+                ['categories', 'Категории'],
+                ['subcategories', 'Подкатегории'],
+                ['regions', 'Регионы'],
+                ['nutrient-names', 'Названия нутриентов'],
+                ['nutrient-types', 'Типы нутриентов'],
+                ['units', 'Единицы измерения'],
+              ].map(([kind, name]) => (
                 <Button
                   key={name}
                   label={name}
                   variant="outline"
-                  onPress={() => setDictionary(name)}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/admin/dictionaries/[kind]',
+                      params: { kind },
+                    })
+                  }
                 />
               ))}
             </Card>
           ) : null}
         </>
       ) : null}
-      <Modal isOpen={dictionary !== null} onClose={() => setDictionary(null)}>
-        <ModalBackdrop />
-        <ModalContent>
-          <ModalHeader>
-            <Heading size="md" className="text-foreground">
-              {dictionary}
-            </Heading>
-          </ModalHeader>
-          <ModalBody>
-            <Text className="text-foreground">
-              Управление словарями появится на следующем этапе.
-            </Text>
-          </ModalBody>
-          <ModalFooter>
-            <Button label="Понятно" onPress={() => setDictionary(null)} />
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      {user.role === 'admin' ? (
+        <Card>
+          <Heading size="md" className="text-card-foreground">
+            Администрирование
+          </Heading>
+          <Button
+            label="Пользователи"
+            variant="outline"
+            onPress={() => router.push('/admin/users')}
+          />
+          <Button
+            label="Версии приложения"
+            variant="outline"
+            onPress={() => router.push('/admin/app-versions')}
+          />
+        </Card>
+      ) : null}
     </ScrollScreen>
   )
 }

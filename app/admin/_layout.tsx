@@ -10,6 +10,13 @@ export default function AdminLayout() {
   // Гостя уводит AuthRedirect; пока пользователя нет, не рендерим содержимое.
   if (!user) return null
 
+  if (
+    user.role !== 'admin' &&
+    /^\/admin\/(users|app-versions)(\/|$)/.test(pathname)
+  ) {
+    return <Redirect href="/admin" />
+  }
+
   const canEdit = hasPermission(user.role, 'canEditProducts')
   // Viewer может открыть данные по прямой ссылке, но не формы изменения.
   if (!canEdit && /\/(new|edit)\/?$/.test(pathname)) {
