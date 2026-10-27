@@ -1,0 +1,123 @@
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css';
+@import 'nativewind/theme';
+
+/* Семантические токены перенесены из afaci-frontend/styles/globals.css.
+   Значения конвертированы из oklch в rgb-триплеты: NativeWind не умеет oklch. */
+@layer theme {
+  :root {
+    --background: 255 255 255;
+    --overlay: 0 0 0;
+    --foreground: 10 10 10;
+    --card: 255 255 255;
+    --card-foreground: 10 10 10;
+    --popover: 255 255 255;
+    --popover-foreground: 10 10 10;
+    --primary: 23 23 23;
+    --primary-foreground: 250 250 250;
+    --secondary: 245 245 245;
+    --secondary-foreground: 23 23 23;
+    --muted: 245 245 245;
+    --muted-foreground: 115 115 115;
+    --accent: 245 245 245;
+    --accent-foreground: 23 23 23;
+    --destructive: 231 0 11;
+    --destructive-foreground: 255 255 255;
+    --destructive-text: 231 0 11;
+    --success: 220 252 231;
+    --success-foreground: 22 101 52;
+    --warning: 254 243 199;
+    --warning-foreground: 146 64 14;
+    --info: 219 234 254;
+    --info-foreground: 30 64 175;
+    --border: 229 229 229;
+    --input: 229 229 229;
+    --ring: 161 161 161;
+    --chart-1: 245 73 0;
+    --chart-2: 0 150 137;
+    --chart-3: 16 78 100;
+    --chart-4: 255 185 0;
+    --chart-5: 254 154 0;
+    --radius: 10px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 10 10 10;
+      --foreground: 250 250 250;
+      --card: 10 10 10;
+      --card-foreground: 250 250 250;
+      --popover: 10 10 10;
+      --popover-foreground: 250 250 250;
+      --primary: 250 250 250;
+      --primary-foreground: 23 23 23;
+      --secondary: 38 38 38;
+      --secondary-foreground: 250 250 250;
+      --muted: 38 38 38;
+      --muted-foreground: 161 161 161;
+      --accent: 38 38 38;
+      --accent-foreground: 250 250 250;
+      --destructive: 130 24 26;
+      --destructive-foreground: 255 255 255;
+      --destructive-text: 251 44 54;
+      --success: 5 46 22;
+      --success-foreground: 187 247 208;
+      --warning: 69 26 3;
+      --warning-foreground: 253 230 138;
+      --info: 23 37 84;
+      --info-foreground: 191 219 254;
+      --border: 38 38 38;
+      --input: 38 38 38;
+      --ring: 82 82 82;
+      --chart-1: 20 71 230;
+      --chart-2: 0 188 125;
+      --chart-3: 254 154 0;
+      --chart-4: 173 70 255;
+      --chart-5: 255 32 86;
+    }
+  }
+}
+
+@theme inline {
+  --font-sans: 'Geist';
+  --font-mono: 'Geist Mono';
+
+  --color-background: rgb(var(--background));
+  --color-overlay: rgb(var(--overlay));
+  --color-foreground: rgb(var(--foreground));
+  --color-card: rgb(var(--card));
+  --color-card-foreground: rgb(var(--card-foreground));
+  --color-popover: rgb(var(--popover));
+  --color-popover-foreground: rgb(var(--popover-foreground));
+  --color-primary: rgb(var(--primary));
+  --color-primary-foreground: rgb(var(--primary-foreground));
+  --color-secondary: rgb(var(--secondary));
+  --color-secondary-foreground: rgb(var(--secondary-foreground));
+  --color-muted: rgb(var(--muted));
+  --color-muted-foreground: rgb(var(--muted-foreground));
+  --color-accent: rgb(var(--accent));
+  --color-accent-foreground: rgb(var(--accent-foreground));
+  --color-destructive: rgb(var(--destructive));
+  --color-destructive-foreground: rgb(var(--destructive-foreground));
+  --color-destructive-text: rgb(var(--destructive-text));
+  --color-info: rgb(var(--info));
+  --color-info-foreground: rgb(var(--info-foreground));
+  --color-success: rgb(var(--success));
+  --color-success-foreground: rgb(var(--success-foreground));
+  --color-warning: rgb(var(--warning));
+  --color-warning-foreground: rgb(var(--warning-foreground));
+  --color-border: rgb(var(--border));
+  --color-input: rgb(var(--input));
+  --color-ring: rgb(var(--ring));
+  --color-chart-1: rgb(var(--chart-1));
+  --color-chart-2: rgb(var(--chart-2));
+  --color-chart-3: rgb(var(--chart-3));
+  --color-chart-4: rgb(var(--chart-4));
+  --color-chart-5: rgb(var(--chart-5));
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
