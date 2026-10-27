@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Pencil, Trash2 } from 'lucide-react-native'
@@ -18,6 +18,11 @@ import {
 import { ApiError } from '@/shared/api/client'
 import { formatNumber } from '@/shared/lib/format'
 import { Box } from '@/shared/ui/box'
+import {
+  Button as ActionButton,
+  ButtonIcon,
+  ButtonText,
+} from '@/shared/ui/button'
 import { MacroChart } from '@/shared/ui/charts/macro-chart'
 import { Heading } from '@/shared/ui/heading'
 import {
@@ -36,7 +41,11 @@ import { Text } from '@/shared/ui/text'
 
 import { getMacroValues, groupNutrients } from '@/modules/products/nutrients'
 
-export function AdminProductDetailScreen() {
+export function AdminProductDetailScreen({
+  fillNutrients = false,
+}: {
+  fillNutrients?: boolean
+}) {
   const params = useLocalSearchParams<{ id: string | string[] }>()
   const id = Array.isArray(params.id) ? params.id[0] : params.id
   const router = useRouter()
@@ -116,16 +125,36 @@ export function AdminProductDetailScreen() {
   const retry = () => {
     for (const query of queries) void query.refetch()
   }
+  const finish = () =>
+    router.replace({
+      pathname: '/admin/products/[id]',
+      params: { id: id ?? '' },
+    })
   const goBack = () => {
+    if (fillNutrients && id) {
+      finish()
+      return
+    }
     if (router.canGoBack()) router.back()
     else router.replace('/admin/products')
   }
   const missing =
     product.error instanceof ApiError && product.error.status === 404
 
+  if (fillNutrients && !canEdit)
+    return <Redirect href={`/admin/products/${id ?? ''}`} />
+
   return (
     <Screen edges={['top']}>
-      <Header title={product.data?.name ?? 'Продукт'} onBack={goBack} />
+      <Header
+        title={
+          fillNutrients
+            ? 'Нутриенты продукта'
+            : (product.data?.name ?? 'Продукт')
+        }
+        subtitle={fillNutrients ? 'Шаг 2 из 2 · Пищевая ценность' : undefined}
+        onBack={goBack}
+      />
       {!id ? (
         <EmptyState title="Продукт не найден" />
       ) : error ? (
@@ -185,7 +214,12 @@ export function AdminProductDetailScreen() {
                   value={String(nutrients.data?.length ?? 0)}
                 />
               </Card>
-              {canEdit ? (
+              {fillNutrients ? (
+                <Text className="text-muted-foreground">
+                  Продукт создан. Добавьте нутриенты и их количество на 100 г.
+                  Каждая запись сохраняется сразу.
+                </Text>
+              ) : canEdit ? (
                 <Button
                   label="Редактировать продукт"
                   icon={Pencil}
@@ -200,7 +234,7 @@ export function AdminProductDetailScreen() {
               ) : (
                 <Text className="text-muted-foreground">Режим просмотра</Text>
               )}
-              <MacroChart values={macros} />
+              {!fillNutrients ? <MacroChart values={macros} /> : null}
               {canEdit ? (
                 <Button
                   label="Добавить нутриент"
@@ -263,10 +297,8 @@ export function AdminProductDetailScreen() {
                       if (nutrient) setEditing({ nutrient })
                     }}
                   />
-                  <Button
-                    label="Удалить"
+                  <ActionButton
                     accessibilityLabel={`Удалить нутриент ${item.name}`}
-                    icon={Trash2}
                     variant="ghost"
                     onPress={() => {
                       setDeleteError('')
@@ -275,7 +307,12 @@ export function AdminProductDetailScreen() {
                           null,
                       )
                     }}
-                  />
+                  >
+                    <ButtonIcon as={Trash2} className="text-destructive-text" />
+                    <ButtonText className="text-destructive-text">
+                      Удалить
+                    </ButtonText>
+                  </ActionButton>
                 </Box>
               ) : null}
             </Box>
@@ -285,6 +322,15 @@ export function AdminProductDetailScreen() {
       ) : (
         <EmptyState title="Продукт не найден" />
       )}
+      {fillNutrients && product.data && !loading && !error ? (
+        <Box
+          className="border-t border-border bg-background px-4 pt-3"
+          // Bottom safe area depends on the device.
+          style={{ paddingBottom: insets.bottom + 12 }}
+        >
+          <Button label="Готово" onPress={finish} />
+        </Box>
+      ) : null}
       {canEdit && editing && id ? (
         <NutrientDialog
           key={editing.nutrient?.id ?? 'new'}
