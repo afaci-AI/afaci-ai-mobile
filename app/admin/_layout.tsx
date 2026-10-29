@@ -12,7 +12,7 @@ export default function AdminLayout() {
 
   if (
     user.role !== 'admin' &&
-    /^\/admin\/(users|app-versions)(\/|$)/.test(pathname)
+    /^\/admin\/users(\/|$)/.test(pathname)
   ) {
     return <Redirect href="/admin" />
   }
