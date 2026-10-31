@@ -22,6 +22,15 @@ export interface ReferenceProteinValue {
   value: number | null
 }
 
+export interface ReferenceSource {
+  title: string
+  authors?: string | null
+  year?: number | null
+  location?: string | null
+  url?: string | null
+  pdf_url?: string | null
+}
+
 export interface ReferenceProtein {
   id: string
   name: string
@@ -29,6 +38,7 @@ export interface ReferenceProtein {
   description?: string | null
   is_default?: boolean
   values: ReferenceProteinValue[]
+  source?: ReferenceSource | null
 }
 
 export interface AminoAcidResult {
