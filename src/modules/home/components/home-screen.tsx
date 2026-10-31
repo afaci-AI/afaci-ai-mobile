@@ -17,7 +17,7 @@ import { Box } from '@/shared/ui/box'
 import { Heading } from '@/shared/ui/heading'
 import { HStack } from '@/shared/ui/hstack'
 import { Icon } from '@/shared/ui/icon'
-import { Badge, Button, Card, ScrollScreen } from '@/shared/ui/kit'
+import { Badge, Card, ScrollScreen } from '@/shared/ui/kit'
 import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
@@ -107,7 +107,7 @@ export function HomeScreen() {
 
   return (
     <ScrollScreen contentClassName="gap-8">
-      <VStack space="lg" className="rounded-2xl bg-accent/40 p-5">
+      <VStack space="lg">
         <HStack space="sm" className="items-center">
           <Icon as={Leaf} className="text-primary" />
           <Text size={FontSize.sm} className="flex-1 text-muted-foreground">
@@ -121,21 +121,35 @@ export function HomeScreen() {
           Изучайте химический, аминокислотный и минеральный состав продуктов.
           Рассчитывайте пищевую и биологическую ценность рецептур.
         </Text>
-        <VStack space="sm">
-          <Button
-            label="База данных продуктов питания"
-            icon={Database}
-            className="min-h-12"
-            onPress={() => router.push('/database')}
-          />
-          <Button
-            label="Калькулятор"
-            icon={Calculator}
-            variant="outline"
-            className="min-h-12"
-            onPress={() => router.push('/calculator')}
-          />
-        </VStack>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="База данных продуктов питания"
+          onPress={() => router.push('/database')}
+          className="rounded-xl data-[active=true]:bg-accent"
+        >
+          <Card>
+            <HStack space="md" className="items-start">
+              <Box className="h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                <Icon as={Database} className="text-primary" />
+              </Box>
+              <VStack space="sm" className="flex-1">
+                <Heading size={FontSize.md} className="text-card-foreground">
+                  База данных продуктов питания
+                </Heading>
+              </VStack>
+            </HStack>
+            <Text size={FontSize.sm} className="text-muted-foreground">
+              Найдите продукт, выберите регион и откройте его нутриентный
+              состав. База доступна без входа.
+            </Text>
+            <HStack space="sm" className="items-center">
+              <Text bold size={FontSize.sm} className="flex-1 text-primary">
+                Перейти к базе
+              </Text>
+              <Icon as={ArrowRight} size="sm" className="text-primary" />
+            </HStack>
+          </Card>
+        </Pressable>
       </VStack>
 
       <VStack space="lg">
