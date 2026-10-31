@@ -177,11 +177,6 @@ export default function AdminDashboardScreen() {
             variant="outline"
             onPress={() => router.push('/admin/users')}
           />
-          <Button
-            label="Версии приложения"
-            variant="outline"
-            onPress={() => router.push('/admin/app-versions')}
-          />
         </Card>
       ) : null}
     </ScrollScreen>
