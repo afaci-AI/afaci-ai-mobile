@@ -27,6 +27,7 @@ import {
   type RankingResult,
 } from './ranking-api'
 import { matchesRecipeName } from './helpers'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 interface RankingPanelProps {
   readonly recipes: SavedRecipe[]
@@ -172,7 +173,7 @@ function RankingSelection({
         <VStack space="md">
           <Select
             leadingIcon={Folder}
-            selectedTextSize="sm"
+            selectedTextSize={FontSize.sm}
             value={groupFilter}
             onChange={(value) => {
               changeSelection([])
@@ -208,7 +209,7 @@ function RankingSelection({
             {visible.length}.
           </Text>
           {hiddenSelectedCount > 0 ? (
-            <Text size="sm" className="text-muted-foreground">
+            <Text size={FontSize.sm} className="text-muted-foreground">
               Скрыто фильтром или поиском: {hiddenSelectedCount} выбранных. Они
               тоже участвуют в ранжировании.
             </Text>
@@ -259,11 +260,11 @@ function RankingSelection({
         if (item.type === 'section') {
           return (
             <VStack space="sm" className="pt-4">
-              <Heading size="md" className="text-foreground">
+              <Heading size={FontSize.md} className="text-foreground">
                 {item.title}
               </Heading>
               {item.description ? (
-                <Text size="sm" className="text-muted-foreground">
+                <Text size={FontSize.sm} className="text-muted-foreground">
                   {item.description}
                 </Text>
               ) : null}
@@ -314,11 +315,11 @@ function RankingSelection({
                     {item.recipe.name}
                   </Text>
                   {group ? (
-                    <Text size="sm" className="text-muted-foreground">
+                    <Text size={FontSize.sm} className="text-muted-foreground">
                       {group.name}
                     </Text>
                   ) : null}
-                  <Text size="sm" className="text-muted-foreground">
+                  <Text size={FontSize.sm} className="text-muted-foreground">
                     БЦ {formatNumber(item.recipe.metrics.bc, 1)}% · КРАС{' '}
                     {formatNumber(item.recipe.metrics.kras, 1)}% · V{' '}
                     {formatNumber(item.recipe.metrics.V)} · G{' '}
@@ -333,7 +334,7 @@ function RankingSelection({
           const score = Math.max(0, Math.min(100, item.recipe.composite * 100))
           return (
             <VStack space="xs">
-              <Text size="sm" className="text-foreground">
+              <Text size={FontSize.sm} className="text-foreground">
                 {item.recipe.name} —{' '}
                 {formatNumber(item.recipe.composite * 100, 0)}
               </Text>
@@ -355,10 +356,10 @@ function RankingSelection({
                 />
               </Box>
               <HStack className="justify-between">
-                <Text size="xs" className="text-muted-foreground">
+                <Text size={FontSize.xs} className="text-muted-foreground">
                   0
                 </Text>
-                <Text size="xs" className="text-muted-foreground">
+                <Text size={FontSize.xs} className="text-muted-foreground">
                   100
                 </Text>
               </HStack>
@@ -388,7 +389,7 @@ function RankingMetrics({
       {winner ? (
         <HStack space="sm" className="items-center">
           <Icon as={Trophy} className="text-primary" />
-          <Heading size="md" className="text-foreground">
+          <Heading size={FontSize.md} className="text-foreground">
             Лучшая рецептура
           </Heading>
         </HStack>
@@ -397,7 +398,7 @@ function RankingMetrics({
         {recipe.rank}. {recipe.name}
       </Text>
       {recipe.group ? (
-        <Text size="sm" className="text-muted-foreground">
+        <Text size={FontSize.sm} className="text-muted-foreground">
           {recipe.group}
         </Text>
       ) : null}
@@ -410,7 +411,7 @@ function RankingMetrics({
           ['Балл', formatNumber(recipe.composite * 100, 0)],
         ].map(([label, value]) => (
           <VStack key={label} space="xs" className="min-w-16">
-            <Text size="sm" className="text-muted-foreground">
+            <Text size={FontSize.sm} className="text-muted-foreground">
               {label}
             </Text>
             <Text bold className="text-foreground">

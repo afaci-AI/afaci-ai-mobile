@@ -18,6 +18,7 @@ import {
 } from '@/shared/ui/modal'
 import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 export function ProductSearchModal({
   open,
@@ -56,7 +57,7 @@ export function ProductSearchModal({
       <ModalBackdrop />
       <ModalContent className="h-4/5 gap-4 p-4">
         <ModalHeader>
-          <Heading size="md" className="text-foreground">
+          <Heading size={FontSize.md} className="text-foreground">
             Выбор продукта
           </Heading>
         </ModalHeader>
@@ -94,7 +95,7 @@ export function ProductSearchModal({
               <Text bold className="text-foreground">
                 {item.product_name}
               </Text>
-              <Text size="sm" className="text-muted-foreground">
+              <Text size={FontSize.sm} className="text-muted-foreground">
                 {item.region_name} · {item.category_name}
                 {excluded.has(item.product_id) ? ' · Уже добавлен' : ''}
               </Text>

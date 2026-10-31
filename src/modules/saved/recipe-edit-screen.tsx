@@ -18,6 +18,7 @@ import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
 import { savedApi } from './api'
 import { errorMessage } from './helpers'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 export function RecipeEditScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -151,7 +152,7 @@ function RecipeEditForm({
           })
         }
       />
-      <Text size="sm" className="text-muted-foreground">
+      <Text size={FontSize.sm} className="text-muted-foreground">
         Сначала сохраните изменения названия и группы. Состав и массы
         редактируются в калькуляторе.
       </Text>

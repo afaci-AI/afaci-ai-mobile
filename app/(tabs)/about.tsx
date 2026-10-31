@@ -7,6 +7,7 @@ import { Icon } from '@/shared/ui/icon'
 import { Button, Header, Screen } from '@/shared/ui/kit'
 import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 export default function AboutScreen() {
   const router = useRouter()
@@ -22,7 +23,7 @@ export default function AboutScreen() {
         <Box className="h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
           <Icon as={Rocket} size="xl" className="text-primary" />
         </Box>
-        <Heading size="xl" className="text-center text-foreground">
+        <Heading size={FontSize.xl} className="text-center text-foreground">
           В будущих релизах
         </Heading>
         <Text className="text-center text-muted-foreground">

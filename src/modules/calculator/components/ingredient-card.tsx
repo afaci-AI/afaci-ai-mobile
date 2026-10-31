@@ -9,6 +9,7 @@ import { Text } from '@/shared/ui/text'
 
 import { parseNumberInput } from '../helpers'
 import type { CalculatorRow } from '../types'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 interface IngredientCardProps {
   row: CalculatorRow
@@ -33,19 +34,19 @@ export const IngredientCard = memo(function IngredientCard({
       </Text>
       <Box className="flex-row flex-wrap items-center gap-x-3 gap-y-1">
         <Box className="flex-row items-center gap-1">
-          <Text size="xs" className="text-muted-foreground">
+          <Text size={FontSize.xs} className="text-muted-foreground">
             Масса, г
           </Text>
-          <Text size="sm" bold className="text-foreground">
+          <Text size={FontSize.sm} bold className="text-foreground">
             {formatNumber(parseNumberInput(row.amount), 6)}
           </Text>
         </Box>
         {costEnabled ? (
           <Box className="flex-row items-center gap-1">
-            <Text size="xs" className="text-muted-foreground">
+            <Text size={FontSize.xs} className="text-muted-foreground">
               Цена, сом/кг
             </Text>
-            <Text size="sm" bold className="text-foreground">
+            <Text size={FontSize.sm} bold className="text-foreground">
               {formatNumber(parseNumberInput(row.price), 6)}
             </Text>
           </Box>

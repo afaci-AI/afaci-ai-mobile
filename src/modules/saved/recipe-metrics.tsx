@@ -3,6 +3,7 @@ import { formatNumber } from '@/shared/lib/format'
 import { ScrollView } from '@/shared/ui/scroll-view'
 import { Badge } from '@/shared/ui/kit'
 import { Text } from '@/shared/ui/text'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 export function isCalculated(recipe: SavedRecipe) {
   return recipe.metrics.bc != null
@@ -17,7 +18,7 @@ export function RecipeMetrics({ recipe }: { recipe: SavedRecipe }) {
       showsHorizontalScrollIndicator={false}
       accessibilityLabel={summary}
     >
-      <Text size="sm" className="text-foreground">
+      <Text size={FontSize.sm} className="text-foreground">
         {summary}
       </Text>
     </ScrollView>

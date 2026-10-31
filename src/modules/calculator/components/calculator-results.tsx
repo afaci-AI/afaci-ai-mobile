@@ -10,11 +10,12 @@ import { VStack } from '@/shared/ui/vstack'
 
 import { aminoAcidName } from '../amino-acid-names'
 import type { ComputeResult } from '../types'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <Box className="gap-1 border-b border-border py-2">
-      <Text size="sm" className="text-muted-foreground">
+      <Text size={FontSize.sm} className="text-muted-foreground">
         {label}
       </Text>
       <Text bold className="text-foreground">
@@ -33,12 +34,12 @@ export const CalculatorResults = memo(function CalculatorResults({
   const m = result.macro
   return (
     <VStack space="lg">
-      <Heading size="xl" className="text-foreground">
+      <Heading size={FontSize.xl} className="text-foreground">
         Результат расчёта
       </Heading>
       {result.warnings?.length ? (
         <Card className="border-destructive">
-          <Heading size="sm" className="text-foreground">
+          <Heading size={FontSize.sm} className="text-foreground">
             Предупреждения
           </Heading>
           {result.warnings.map((warning, index) => (
@@ -50,7 +51,7 @@ export const CalculatorResults = memo(function CalculatorResults({
       ) : null}
       {result.verdict ? (
         <Card>
-          <Heading size="md" className="text-foreground">
+          <Heading size={FontSize.md} className="text-foreground">
             {result.verdict.headline}
           </Heading>
           <Badge
@@ -82,13 +83,13 @@ export const CalculatorResults = memo(function CalculatorResults({
               : '—'
           }
         />
-        <Text size="sm" className="text-muted-foreground">
+        <Text size={FontSize.sm} className="text-muted-foreground">
           Аминокислот со скором ниже эталона: {result.limiting_count}.{' '}
           {result.limiting.map(aminoAcidName).join(', ')}
         </Text>
       </Card>
       <Card>
-        <Heading size="md" className="text-foreground">
+        <Heading size={FontSize.md} className="text-foreground">
           Рецептура на 100 г
         </Heading>
         {result.recipe.map((item, index) => (
@@ -96,7 +97,7 @@ export const CalculatorResults = memo(function CalculatorResults({
             <Text bold className="text-foreground">
               {item.name} · {nf(item.amount_g)} г
             </Text>
-            <Text size="sm" className="text-muted-foreground">
+            <Text size={FontSize.sm} className="text-muted-foreground">
               {item.region ?? 'Регион не указан'} ·{' '}
               {item.subcategory ?? 'Без подкатегории'}
             </Text>
@@ -129,7 +130,7 @@ export const CalculatorResults = memo(function CalculatorResults({
         }
       />
       <Card>
-        <Heading size="md" className="text-foreground">
+        <Heading size={FontSize.md} className="text-foreground">
           Аминокислотный скор
         </Heading>
         <Text className="text-muted-foreground">
@@ -171,17 +172,17 @@ export const CalculatorResults = memo(function CalculatorResults({
                       : 'secondary'
                 }
               />
-              <Text size="sm" className="text-muted-foreground">
+              <Text size={FontSize.sm} className="text-muted-foreground">
                 Эталон: {nf(amino.reference)} г/100 г белка
               </Text>
-              <Text size="sm" className="text-muted-foreground">
+              <Text size={FontSize.sm} className="text-muted-foreground">
                 Коэффициент сбалансированности: {nf(amino.utility)}
               </Text>
             </Box>
           ))}
       </Card>
       <Card>
-        <Heading size="md" className="text-foreground">
+        <Heading size={FontSize.md} className="text-foreground">
           Качественные показатели
         </Heading>
         <Metric

@@ -44,6 +44,7 @@ import {
   type AdminDictionaryEntry,
   type DictionaryKind,
 } from './dictionaries-api'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 export default function DictionariesScreen() {
   const { kind } = useLocalSearchParams<{ kind: string }>()
@@ -186,7 +187,7 @@ function DictionaryScreen({ kind }: { kind: DictionaryKind }) {
                 {item.name}
               </Text>
               {parentKind ? (
-                <Text size="sm" className="text-muted-foreground">
+                <Text size={FontSize.sm} className="text-muted-foreground">
                   {parents.data?.find(
                     (parent) =>
                       parent.id === (item.category_id ?? item.nutrient_type_id),
@@ -345,7 +346,7 @@ function DictionaryDialog({
       <ModalBackdrop />
       <ModalContent className="max-h-full shrink">
         <ModalHeader>
-          <Heading size="lg" className="text-foreground">
+          <Heading size={FontSize.lg} className="text-foreground">
             {entry ? 'Редактирование записи' : 'Новая запись'}
           </Heading>
         </ModalHeader>

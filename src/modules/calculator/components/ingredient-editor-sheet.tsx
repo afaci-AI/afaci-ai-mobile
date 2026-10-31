@@ -24,6 +24,7 @@ import { parseNumberInput } from '../helpers'
 
 import type { CalculatorRow } from '../types'
 import { ProductSearchModal } from './product-search-modal'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 interface IngredientEditorSheetProps {
   open: boolean
@@ -109,7 +110,7 @@ function IngredientEditorForm({
           >
             <Box className="mb-4 h-1 w-12 self-center rounded-full bg-muted" />
             <ModalHeader>
-              <Heading size="md" className="text-foreground">
+              <Heading size={FontSize.md} className="text-foreground">
                 Редактирование ингредиента
               </Heading>
             </ModalHeader>

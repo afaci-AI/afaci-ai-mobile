@@ -15,6 +15,7 @@ import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
 import { KeyboardAvoidingView } from '@/shared/ui/keyboard-avoiding-view'
 import { ScrollView } from '@/shared/ui/scroll-view'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Укажите email').email('Некорректный email'),
@@ -90,10 +91,16 @@ export default function LoginScreen() {
                   className="text-primary-foreground"
                 />
               </Box>
-              <Heading size="2xl" className="text-center text-card-foreground">
+              <Heading
+                size={FontSize.xxl}
+                className="text-center text-card-foreground"
+              >
                 Вход в AFACI
               </Heading>
-              <Text size="sm" className="text-center text-muted-foreground">
+              <Text
+                size={FontSize.sm}
+                className="text-center text-muted-foreground"
+              >
                 Войдите, чтобы пользоваться калькулятором и сохранять рецептуры
               </Text>
             </Box>
@@ -159,7 +166,7 @@ export default function LoginScreen() {
 
               {serverError ? (
                 <Box className="rounded-md border border-destructive/40 bg-destructive/10 p-3">
-                  <Text size="sm" className="text-destructive-text">
+                  <Text size={FontSize.sm} className="text-destructive-text">
                     {serverError}
                   </Text>
                 </Box>
@@ -175,7 +182,10 @@ export default function LoginScreen() {
             </Box>
           </Card>
 
-          <Text size="sm" className="mt-6 text-center text-muted-foreground">
+          <Text
+            size={FontSize.sm}
+            className="mt-6 text-center text-muted-foreground"
+          >
             Нет аккаунта? Обратитесь к администратору.
           </Text>
         </ScrollView>

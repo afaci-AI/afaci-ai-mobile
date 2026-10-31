@@ -20,6 +20,7 @@ import { Badge, Button, Card, ScrollScreen } from '@/shared/ui/kit'
 import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 const tools = [
   {
@@ -91,7 +92,7 @@ function Feature({ icon, title, description }: FeatureProps) {
         <Text bold className="text-foreground">
           {title}
         </Text>
-        <Text size="sm" className="text-muted-foreground">
+        <Text size={FontSize.sm} className="text-muted-foreground">
           {description}
         </Text>
       </VStack>
@@ -108,11 +109,11 @@ export function HomeScreen() {
       <VStack space="lg" className="rounded-2xl bg-accent/40 p-5">
         <HStack space="sm" className="items-center">
           <Icon as={Leaf} className="text-primary" />
-          <Text size="sm" className="flex-1 text-muted-foreground">
+          <Text size={FontSize.sm} className="flex-1 text-muted-foreground">
             AFACI · Продукты Кыргызстана
           </Text>
         </HStack>
-        <Heading size="2xl" className="text-foreground">
+        <Heading size={FontSize.xxl} className="text-foreground">
           База данных продуктов питания
         </Heading>
         <Text className="text-muted-foreground">
@@ -138,10 +139,10 @@ export function HomeScreen() {
 
       <VStack space="lg">
         <VStack space="xs">
-          <Heading size="xl" className="text-foreground">
+          <Heading size={FontSize.xl} className="text-foreground">
             Инструменты
           </Heading>
-          <Text size="sm" className="text-muted-foreground">
+          <Text size={FontSize.sm} className="text-muted-foreground">
             {isGuest
               ? 'Для расчётов и работы с рецептурами войдите в аккаунт.'
               : 'Рассчитывайте, сохраняйте и сравнивайте рецептуры.'}
@@ -161,7 +162,7 @@ export function HomeScreen() {
                   <Icon as={tool.icon} className="text-primary" />
                 </Box>
                 <VStack space="sm" className="flex-1">
-                  <Heading size="md" className="text-card-foreground">
+                  <Heading size={FontSize.md} className="text-card-foreground">
                     {tool.title}
                   </Heading>
                   {isGuest ? (
@@ -173,11 +174,11 @@ export function HomeScreen() {
                   ) : null}
                 </VStack>
               </HStack>
-              <Text size="sm" className="text-muted-foreground">
+              <Text size={FontSize.sm} className="text-muted-foreground">
                 {tool.description}
               </Text>
               <HStack space="sm" className="items-center">
-                <Text bold size="sm" className="flex-1 text-primary">
+                <Text bold size={FontSize.sm} className="flex-1 text-primary">
                   {tool.action}
                 </Text>
                 <Icon as={ArrowRight} size="sm" className="text-primary" />
@@ -188,7 +189,7 @@ export function HomeScreen() {
       </VStack>
 
       <VStack space="lg">
-        <Heading size="xl" className="text-foreground">
+        <Heading size={FontSize.xl} className="text-foreground">
           Возможности
         </Heading>
         {features.map((feature) => (
@@ -197,7 +198,7 @@ export function HomeScreen() {
       </VStack>
 
       <Card className="bg-muted/40">
-        <Heading size="lg" className="text-card-foreground">
+        <Heading size={FontSize.lg} className="text-card-foreground">
           Изучайте состав продуктов
         </Heading>
         <Text className="text-muted-foreground">

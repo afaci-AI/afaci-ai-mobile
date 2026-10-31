@@ -28,6 +28,7 @@ import {
 import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
 import { Input } from './input'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 export interface SelectOption {
   label: string
@@ -43,7 +44,7 @@ interface SelectProps {
   isDisabled?: boolean
   isInvalid?: boolean
   /** Compact selected value; trigger touch target stays 48 dp. */
-  selectedTextSize?: 'sm'
+  selectedTextSize?: typeof FontSize.sm
 }
 
 /** Searchable bottom panel shared by dictionary and form selections. */
@@ -91,7 +92,7 @@ export function Select({
           <Icon as={leadingIcon} className="text-muted-foreground" />
         ) : null}
         <Text
-          size={selectedTextSize ?? 'md'}
+          size={selectedTextSize ?? FontSize.md}
           numberOfLines={1}
           className={cn(
             'min-w-0 flex-1',
@@ -121,7 +122,7 @@ export function Select({
         >
           <Box className="mb-3 h-1 w-12 self-center rounded-full bg-muted" />
           <ModalHeader className="mb-3 gap-3">
-            <Heading size="md" className="flex-1 text-foreground">
+            <Heading size={FontSize.md} className="flex-1 text-foreground">
               {placeholder}
             </Heading>
             <IconButton

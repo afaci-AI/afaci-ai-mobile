@@ -21,6 +21,7 @@ import {
 } from '@/shared/ui/kit'
 import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 const ROLE_LABELS: Record<UserRole, string> = {
   admin: 'Администратор',
@@ -72,10 +73,10 @@ export default function ProfileScreen() {
                 </Text>
               </Box>
               <Box className="flex-1 gap-1">
-                <Heading size="md" className="text-card-foreground">
+                <Heading size={FontSize.md} className="text-card-foreground">
                   {user.name}
                 </Heading>
-                <Text size="sm" className="text-muted-foreground">
+                <Text size={FontSize.sm} className="text-muted-foreground">
                   {user.email}
                 </Text>
               </Box>
@@ -84,18 +85,18 @@ export default function ProfileScreen() {
 
             <Box className="gap-2 border-t border-border pt-3">
               <Box className="flex-row justify-between gap-3">
-                <Text size="sm" className="text-muted-foreground">
+                <Text size={FontSize.sm} className="text-muted-foreground">
                   Последний вход
                 </Text>
-                <Text size="sm" className="text-card-foreground">
+                <Text size={FontSize.sm} className="text-card-foreground">
                   {formatDateTime(user.lastLoginAt)}
                 </Text>
               </Box>
               <Box className="flex-row justify-between gap-3">
-                <Text size="sm" className="text-muted-foreground">
+                <Text size={FontSize.sm} className="text-muted-foreground">
                   Версия приложения
                 </Text>
-                <Text size="sm" className="text-card-foreground">
+                <Text size={FontSize.sm} className="text-card-foreground">
                   {appVersion}
                 </Text>
               </Box>
@@ -112,7 +113,7 @@ export default function ProfileScreen() {
                 <Icon as={Shield} className="text-foreground" />
                 <Box className="flex-1">
                   <Text className="text-card-foreground">Админка</Text>
-                  <Text size="sm" className="text-muted-foreground">
+                  <Text size={FontSize.sm} className="text-muted-foreground">
                     {user.role === 'admin'
                       ? 'Продукты, словари, пользователи'
                       : 'Продукты и словари'}
@@ -143,10 +144,10 @@ export default function ProfileScreen() {
         </>
       ) : (
         <Card>
-          <Heading size="md" className="text-card-foreground">
+          <Heading size={FontSize.md} className="text-card-foreground">
             Вы не вошли
           </Heading>
-          <Text size="sm" className="text-muted-foreground">
+          <Text size={FontSize.sm} className="text-muted-foreground">
             Войдите, чтобы сохранять рецептуры и пользоваться админкой.
           </Text>
           <Button label="Войти" onPress={() => router.push('/login')} />

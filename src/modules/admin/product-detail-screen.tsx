@@ -40,6 +40,7 @@ import { SectionList } from '@/shared/ui/section-list'
 import { Text } from '@/shared/ui/text'
 
 import { getMacroValues, groupNutrients } from '@/modules/products/nutrients'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 export function AdminProductDetailScreen({
   fillNutrients = false,
@@ -182,7 +183,7 @@ export function AdminProductDetailScreen({
           ListHeaderComponent={
             <Box className="gap-4 py-4">
               <Card>
-                <Heading size="xl" className="text-foreground">
+                <Heading size={FontSize.xl} className="text-foreground">
                   {product.data.name}
                 </Heading>
                 <ProductAttribute
@@ -249,10 +250,10 @@ export function AdminProductDetailScreen({
                   {deleteError}
                 </Text>
               ) : null}
-              <Heading size="lg" className="text-foreground">
+              <Heading size={FontSize.lg} className="text-foreground">
                 Нутриенты
               </Heading>
-              <Text size="sm" className="text-muted-foreground">
+              <Text size={FontSize.sm} className="text-muted-foreground">
                 Пищевая ценность на 100 г продукта. Значения сгруппированы по
                 типу и единице измерения.
               </Text>
@@ -266,10 +267,10 @@ export function AdminProductDetailScreen({
           }
           renderSectionHeader={({ section }) => (
             <Box className="gap-1 rounded-t-xl border border-b-0 border-border bg-muted px-4 py-3">
-              <Heading size="md" className="text-foreground">
+              <Heading size={FontSize.md} className="text-foreground">
                 {section.title}
               </Heading>
-              <Text size="sm" className="text-muted-foreground">
+              <Text size={FontSize.sm} className="text-muted-foreground">
                 Единица измерения: {section.unit}
               </Text>
             </Box>
@@ -365,7 +366,7 @@ export function AdminProductDetailScreen({
 function ProductAttribute({ label, value }: { label: string; value?: string }) {
   return (
     <Box className="gap-1">
-      <Text size="sm" className="text-muted-foreground">
+      <Text size={FontSize.sm} className="text-muted-foreground">
         {label}
       </Text>
       <Text className="text-foreground">{value || 'Не указано'}</Text>

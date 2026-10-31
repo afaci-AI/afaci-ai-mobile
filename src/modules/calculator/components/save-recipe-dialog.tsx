@@ -21,6 +21,7 @@ import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
 
 import type { SavedGroup } from '../types'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 export interface SaveRecipeValues {
   name: string
@@ -58,7 +59,7 @@ export function SaveRecipeDialog(props: Props) {
       <ModalBackdrop />
       <ModalContent className="max-h-5/6 p-4">
         <ModalHeader>
-          <Heading size="md" className="text-foreground">
+          <Heading size={FontSize.md} className="text-foreground">
             {props.editing ? 'Обновить рецептуру' : 'Сохранить рецептуру'}
           </Heading>
         </ModalHeader>
