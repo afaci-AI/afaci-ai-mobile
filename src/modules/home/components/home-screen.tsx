@@ -7,6 +7,7 @@ import {
   FlaskConical,
   Leaf,
   MapPin,
+  SlidersHorizontal,
   Sparkles,
 } from 'lucide-react-native'
 import type { LucideIcon } from 'lucide-react-native'
@@ -195,6 +196,49 @@ export function HomeScreen() {
         {features.map((feature) => (
           <Feature key={feature.title} {...feature} />
         ))}
+      </VStack>
+
+      <VStack space="lg">
+        <Heading size={FontSize.xl} className="text-foreground">
+          Оптимизация рецептур
+        </Heading>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Оптимизация рецептур${isGuest ? '. Требуется вход' : ''}`}
+          onPress={() => router.push('/calculator')}
+          className="rounded-xl data-[active=true]:bg-accent"
+        >
+          <Card>
+            <HStack space="md" className="items-start">
+              <Box className="h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                <Icon as={SlidersHorizontal} className="text-primary" />
+              </Box>
+              <VStack space="sm" className="flex-1">
+                <Heading size={FontSize.md} className="text-card-foreground">
+                  Улучшайте рецептуру без потери качества
+                </Heading>
+                {isGuest ? (
+                  <Badge
+                    label="Требуется вход"
+                    variant="outline"
+                    className="self-start"
+                  />
+                ) : null}
+              </VStack>
+            </HStack>
+            <Text size={FontSize.sm} className="text-muted-foreground">
+              Базовая оптимизация повышает биологическую ценность, а оптимизация
+              по цене снижает стоимость. В обоих режимах БЦ и V не уменьшаются,
+              а G не растёт. Расчёт выполняется на сервере.
+            </Text>
+            <HStack space="sm" className="items-center">
+              <Text bold size={FontSize.sm} className="flex-1 text-primary">
+                Оптимизировать рецептуру
+              </Text>
+              <Icon as={ArrowRight} size="sm" className="text-primary" />
+            </HStack>
+          </Card>
+        </Pressable>
       </VStack>
 
       <Card className="bg-muted/40">
