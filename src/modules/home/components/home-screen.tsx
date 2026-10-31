@@ -241,21 +241,6 @@ export function HomeScreen() {
         </Pressable>
       </VStack>
 
-      <Card className="bg-muted/40">
-        <Heading size={FontSize.lg} className="text-card-foreground">
-          Изучайте состав продуктов
-        </Heading>
-        <Text className="text-muted-foreground">
-          Найдите продукт, выберите регион и откройте его нутриентный состав.
-          База доступна без входа.
-        </Text>
-        <Button
-          label="Перейти к базе"
-          icon={ArrowRight}
-          className="min-h-12"
-          onPress={() => router.push('/database')}
-        />
-      </Card>
       <Button
         label="О нас"
         variant="ghost"
