@@ -43,7 +43,13 @@ export function ProductDetailScreen() {
         dictionaries.data?.names ?? [],
         dictionaries.data?.types ?? [],
         dictionaries.data?.units ?? [],
-      ),
+      ).sort((a, b) => {
+        const aIsChemical =
+          a.title.trim().toLocaleLowerCase('ru') === 'химический состав'
+        const bIsChemical =
+          b.title.trim().toLocaleLowerCase('ru') === 'химический состав'
+        return Number(bIsChemical) - Number(aIsChemical)
+      }),
     [nutrients.data, dictionaries.data],
   )
   const macros = useMemo(
