@@ -1,7 +1,10 @@
 import { getToken } from '@/shared/session/token'
 
-/** Dev-стенд по умолчанию; переопределяется через `EXPO_PUBLIC_API_URL`. */
-const DEFAULT_BASE_URL = 'https://api.foodcraftsl.lab'
+/**
+ * Dev-стенд по умолчанию: backend на хосте, виден из эмулятора как `10.0.2.2`.
+ * Переопределяется через `EXPO_PUBLIC_API_URL`.
+ */
+const DEFAULT_BASE_URL = 'http://10.0.2.2:8000'
 const REQUEST_TIMEOUT_MS = 20_000
 
 export const API_BASE_URL = (

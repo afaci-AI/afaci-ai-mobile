@@ -69,6 +69,17 @@ export function listProducts(
   return request(`/table/products?${params.toString()}`)
 }
 
+/** Общее число продуктов в базе: не зависит от поиска, фильтров и страниц. */
+export function useProductsTotal() {
+  return useQuery({
+    queryKey: ['catalog', 'products-total'],
+    queryFn: async () => {
+      const { count } = await request<{ count: number }>('/products/count')
+      return count
+    },
+  })
+}
+
 async function getCatalogDictionaries() {
   const [categories, subcategories, regions] = await Promise.all([
     request<DictionaryEntry[]>('/categories'),
