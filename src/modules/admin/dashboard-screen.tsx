@@ -21,6 +21,7 @@ import {
 } from '@/shared/ui/kit'
 import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 export default function AdminDashboardScreen() {
   const router = useRouter()
@@ -78,17 +79,17 @@ export default function AdminDashboardScreen() {
           <Box className="flex-row flex-wrap gap-3">
             {statistics.map(({ label, value }) => (
               <Card key={label} className="min-w-32 flex-1">
-                <Text size="sm" className="text-muted-foreground">
+                <Text size={FontSize.sm} className="text-muted-foreground">
                   {label}
                 </Text>
-                <Heading size="2xl" className="text-card-foreground">
+                <Heading size={FontSize.xxl} className="text-card-foreground">
                   {value}
                 </Heading>
               </Card>
             ))}
           </Box>
           <Card>
-            <Heading size="md" className="text-card-foreground">
+            <Heading size={FontSize.md} className="text-card-foreground">
               Быстрые действия
             </Heading>
             <Button
@@ -112,10 +113,10 @@ export default function AdminDashboardScreen() {
             />
           </Card>
           <Card>
-            <Heading size="md" className="text-card-foreground">
+            <Heading size={FontSize.md} className="text-card-foreground">
               Последние продукты
             </Heading>
-            <Text size="sm" className="text-muted-foreground">
+            <Text size={FontSize.sm} className="text-muted-foreground">
               Первые пять записей в порядке ответа сервера. Дата добавления
               недоступна.
             </Text>
@@ -140,7 +141,7 @@ export default function AdminDashboardScreen() {
           </Card>
           {canManageDictionaries ? (
             <Card>
-              <Heading size="md" className="text-card-foreground">
+              <Heading size={FontSize.md} className="text-card-foreground">
                 Словари
               </Heading>
               {[
@@ -169,7 +170,7 @@ export default function AdminDashboardScreen() {
       ) : null}
       {user.role === 'admin' ? (
         <Card>
-          <Heading size="md" className="text-card-foreground">
+          <Heading size={FontSize.md} className="text-card-foreground">
             Администрирование
           </Heading>
           <Button

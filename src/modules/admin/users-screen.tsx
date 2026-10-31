@@ -41,6 +41,7 @@ import {
   userRoles,
   userStatuses,
 } from './users-api'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 const statusVariants = {
   active: 'success',
@@ -148,7 +149,10 @@ export function AdminUsersScreen() {
                 />
                 {activeFilterCount ? (
                   <Box className="absolute right-1 top-1 h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1">
-                    <Text size="xs" className="text-primary-foreground">
+                    <Text
+                      size={FontSize.xs}
+                      className="text-primary-foreground"
+                    >
                       {activeFilterCount}
                     </Text>
                   </Box>

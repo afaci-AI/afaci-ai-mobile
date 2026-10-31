@@ -17,6 +17,7 @@ import {
 } from '@/shared/ui/kit'
 import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 /** Экран поиска продуктов: запрос уходит в общий store фильтров каталога. */
 export default function CatalogSearchScreen() {
@@ -54,7 +55,7 @@ export default function CatalogSearchScreen() {
       />
       {pending ? (
         <Text
-          size="sm"
+          size={FontSize.sm}
           className="text-muted-foreground"
           accessibilityLiveRegion="polite"
         >
@@ -62,7 +63,7 @@ export default function CatalogSearchScreen() {
         </Text>
       ) : !query.isPending && !query.isError ? (
         <Text
-          size="sm"
+          size={FontSize.sm}
           className="text-muted-foreground"
           accessibilityLiveRegion="polite"
         >

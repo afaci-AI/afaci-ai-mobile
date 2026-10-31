@@ -21,6 +21,7 @@ import {
 import { ScrollView } from '@/shared/ui/scroll-view'
 import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 /** Подробный выбор фильтров каталога: категории и подкатегории — чипами. */
 export default function CatalogFiltersScreen() {
@@ -75,11 +76,11 @@ export default function CatalogFiltersScreen() {
   ) {
     return (
       <VStack space="sm">
-        <Heading size="sm" className="text-foreground">
+        <Heading size={FontSize.sm} className="text-foreground">
           {title}
         </Heading>
         {options.length === 0 && emptyLabel ? (
-          <Text size="sm" className="text-muted-foreground">
+          <Text size={FontSize.sm} className="text-muted-foreground">
             {emptyLabel}
           </Text>
         ) : (

@@ -8,6 +8,7 @@ import { ScrollView } from '@/shared/ui/scroll-view'
 import { VStack } from '@/shared/ui/vstack'
 import { useAdminUserFilters } from './user-filters-store'
 import { userRoles, userStatuses } from './users-api'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 /** Как в базе продуктов: Back отменяет черновик, «Показать» применяет. */
 export default function AdminUserFiltersScreen() {
@@ -31,7 +32,7 @@ export default function AdminUserFiltersScreen() {
   ) {
     return (
       <VStack space="sm">
-        <Heading size="sm" className="text-foreground">
+        <Heading size={FontSize.sm} className="text-foreground">
           {title}
         </Heading>
         <HStack space="sm" className="flex-wrap gap-2">

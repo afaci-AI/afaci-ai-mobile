@@ -10,6 +10,7 @@ import {
 } from '@/shared/ui/modal'
 import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 export type EditDialog = {
   kind: 'create-group' | 'rename-group'
@@ -45,7 +46,7 @@ export function RecipeDialog({
       <ModalBackdrop />
       <ModalContent className="p-4">
         <ModalHeader>
-          <Heading size="md" className="text-foreground">
+          <Heading size={FontSize.md} className="text-foreground">
             {title}
           </Heading>
         </ModalHeader>

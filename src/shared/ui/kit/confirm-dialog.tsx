@@ -11,6 +11,7 @@ import {
 import { Text } from '@/shared/ui/text'
 
 import { Button } from './button'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 interface ConfirmDialogProps {
   isOpen: boolean
@@ -40,14 +41,14 @@ export function ConfirmDialog({
       <ModalBackdrop />
       <ModalContent>
         <ModalHeader>
-          <Heading size="md" className="text-foreground">
+          <Heading size={FontSize.md} className="text-foreground">
             {title}
           </Heading>
         </ModalHeader>
 
         {description ? (
           <ModalBody>
-            <Text size="sm" className="text-muted-foreground">
+            <Text size={FontSize.sm} className="text-muted-foreground">
               {description}
             </Text>
           </ModalBody>

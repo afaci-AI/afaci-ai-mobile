@@ -13,6 +13,7 @@ import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
 import { savedApi } from './api'
 import { RecipeMetrics } from './recipe-metrics'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 export function RecipeDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -129,7 +130,7 @@ export function RecipeDetailScreen() {
                   onRetry={() => void names.refetch()}
                 />
               ) : null}
-              <Heading size="md" className="text-foreground">
+              <Heading size={FontSize.md} className="text-foreground">
                 Состав ·{' '}
                 {formatNumber(
                   recipe.items.reduce((sum, item) => sum + item.amount_g, 0),
@@ -141,7 +142,7 @@ export function RecipeDetailScreen() {
           renderItem={({ item }) => (
             <Card>
               <VStack space="sm">
-                <Heading size="sm" className="text-foreground">
+                <Heading size={FontSize.sm} className="text-foreground">
                   {item.product_name ||
                     names.data?.[item.product_id] ||
                     (names.isFetching

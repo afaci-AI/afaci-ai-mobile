@@ -19,6 +19,7 @@ import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
 import { aminoAcidName } from '../amino-acid-names'
 import type { ReferenceProtein } from '../types'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 interface ReferenceInfoDialogProps {
   open: boolean
@@ -45,7 +46,7 @@ export function ReferenceInfoDialog({
       <ModalContent className="max-h-full shrink p-4" accessibilityViewIsModal>
         <ModalHeader className="items-start">
           <Box className="min-w-0 flex-1">
-            <Heading size="md" className="text-foreground">
+            <Heading size={FontSize.md} className="text-foreground">
               {reference?.name}
             </Heading>
           </Box>
@@ -67,7 +68,7 @@ export function ReferenceInfoDialog({
             {reference?.description ? (
               <Text className="text-foreground">{reference.description}</Text>
             ) : null}
-            <Text size="sm" className="text-muted-foreground">
+            <Text size={FontSize.sm} className="text-muted-foreground">
               Аминокислоты, г/100 г белка
             </Text>
             {reference?.values.map((value, index) => (
@@ -75,10 +76,10 @@ export function ReferenceInfoDialog({
                 key={`${aminoAcidName(value.amino_acid)}-${index}`}
                 className="gap-1 border-b border-border pb-3"
               >
-                <Text size="sm" className="text-foreground">
+                <Text size={FontSize.sm} className="text-foreground">
                   {aminoAcidName(value.amino_acid)}
                 </Text>
-                <Text size="sm" className="text-muted-foreground">
+                <Text size={FontSize.sm} className="text-muted-foreground">
                   {formatNumber(value.value)}
                 </Text>
               </Box>

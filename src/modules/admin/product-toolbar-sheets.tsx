@@ -22,6 +22,7 @@ import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
 import type { ProductSort } from './product-filters-store'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 function ToolbarSheet({
   title,
@@ -52,7 +53,7 @@ function ToolbarSheet({
       >
         <Box className="mb-4 h-1 w-12 self-center rounded-full bg-muted" />
         <ModalHeader>
-          <Heading size="md" className="text-foreground">
+          <Heading size={FontSize.md} className="text-foreground">
             {title}
           </Heading>
         </ModalHeader>

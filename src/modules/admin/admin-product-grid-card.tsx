@@ -8,6 +8,7 @@ import { Card } from '@/shared/ui/kit'
 import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 interface Props {
   product: FlatProduct
@@ -37,7 +38,11 @@ export function AdminProductGridCard({
           <Text bold numberOfLines={2} className="text-card-foreground">
             {product.product_name || 'Продукт без названия'}
           </Text>
-          <Text size="sm" numberOfLines={2} className="text-muted-foreground">
+          <Text
+            size={FontSize.sm}
+            numberOfLines={2}
+            className="text-muted-foreground"
+          >
             {[product.category_name, product.subcategory_name]
               .filter(Boolean)
               .join(' · ') || 'Категория не указана'}
@@ -46,7 +51,7 @@ export function AdminProductGridCard({
         <HStack space="xs" className="items-center">
           <Icon as={MapPin} size="sm" className="text-muted-foreground" />
           <Text
-            size="xs"
+            size={FontSize.xs}
             numberOfLines={1}
             className="flex-1 text-muted-foreground"
           >

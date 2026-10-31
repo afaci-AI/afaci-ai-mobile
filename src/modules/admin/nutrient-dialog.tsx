@@ -34,6 +34,7 @@ import {
   updateNutrient,
   type NutrientInput,
 } from './api'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 interface Props {
   productId: string
@@ -147,7 +148,7 @@ export function NutrientDialog({
       <ModalBackdrop />
       <ModalContent className="max-h-full shrink">
         <ModalHeader>
-          <Heading size="lg" className="text-foreground">
+          <Heading size={FontSize.lg} className="text-foreground">
             {duplicate
               ? 'Нутриент уже есть'
               : nutrient

@@ -32,6 +32,7 @@ import { IngredientCard } from './components/ingredient-card'
 import { IngredientEditorSheet } from './components/ingredient-editor-sheet'
 import { SaveRecipeDialog } from './components/save-recipe-dialog'
 import { OptimizeCostDialog } from './components/optimize-cost-dialog'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'Не удалось выполнить запрос'
@@ -334,7 +335,7 @@ export function CalculatorScreen() {
                   value={referenceId}
                   onChange={(id) => s.changeReference(id)}
                   isDisabled={!!busy}
-                  selectedTextSize="sm"
+                  selectedTextSize={FontSize.sm}
                 />
               </Box>
               <Pressable
@@ -387,7 +388,7 @@ export function CalculatorScreen() {
           >
             Сумма: {formatNumber(sum, 6)} / 100 г
           </Text>
-          <Text size="sm" className="text-muted-foreground">
+          <Text size={FontSize.sm} className="text-muted-foreground">
             Для расчёта и сохранения готовой рецептуры требуется ровно 100 г.
             Черновик можно сохранить с другой суммой.
           </Text>

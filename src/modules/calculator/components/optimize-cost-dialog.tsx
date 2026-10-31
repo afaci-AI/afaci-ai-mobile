@@ -15,6 +15,7 @@ import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
 
 import type { CalculatorRow, OptConstraints } from '../types'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 export interface OptimizationBound {
   key: string
@@ -44,7 +45,7 @@ export function OptimizeCostDialog(props: Props) {
       <ModalBackdrop />
       <ModalContent className="max-h-5/6 p-4">
         <ModalHeader>
-          <Heading size="md" className="text-foreground">
+          <Heading size={FontSize.md} className="text-foreground">
             Оптимизация стоимости
           </Heading>
         </ModalHeader>
@@ -134,7 +135,7 @@ function OptimizeForm({ onClose, rows, pending, error, onOptimize }: Props) {
             placeholder="Без ограничения"
           />
         </FormField>
-        <Heading size="sm" className="text-foreground">
+        <Heading size={FontSize.sm} className="text-foreground">
           Диапазоны масс ингредиентов
         </Heading>
         {rows.map((row) => {

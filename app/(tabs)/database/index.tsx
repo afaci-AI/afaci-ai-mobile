@@ -20,6 +20,7 @@ import {
 import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 export default function DatabaseScreen() {
   const [refreshing, setRefreshing] = useState(false)
@@ -82,7 +83,7 @@ export default function DatabaseScreen() {
           <Icon as={SlidersHorizontal} size="md" className="text-foreground" />
           {activeFilterCount ? (
             <Box className="absolute right-1 top-1 h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1">
-              <Text size="xs" className="text-primary-foreground">
+              <Text size={FontSize.xs} className="text-primary-foreground">
                 {activeFilterCount}
               </Text>
             </Box>
@@ -91,12 +92,12 @@ export default function DatabaseScreen() {
       </HStack>
 
       {total.isSuccess ? (
-        <Text size="sm" className="text-muted-foreground">
+        <Text size={FontSize.sm} className="text-muted-foreground">
           Всего продуктов питания: {total.data}
         </Text>
       ) : total.isError ? (
         <HStack space="sm" className="items-center">
-          <Text size="sm" className="flex-1 text-muted-foreground">
+          <Text size={FontSize.sm} className="flex-1 text-muted-foreground">
             Не удалось загрузить общее количество продуктов
           </Text>
           <Button
@@ -107,14 +108,14 @@ export default function DatabaseScreen() {
           />
         </HStack>
       ) : (
-        <Text size="sm" className="text-muted-foreground">
+        <Text size={FontSize.sm} className="text-muted-foreground">
           Всего продуктов питания: …
         </Text>
       )}
 
       {hasFilters ? (
         <HStack space="sm" className="items-center">
-          <Text size="sm" className="flex-1 text-muted-foreground">
+          <Text size={FontSize.sm} className="flex-1 text-muted-foreground">
             {activeFilterCount
               ? `Фильтров выбрано: ${activeFilterCount}`
               : 'Поиск по названию'}

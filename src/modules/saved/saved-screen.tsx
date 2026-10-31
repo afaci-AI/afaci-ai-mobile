@@ -30,6 +30,7 @@ import { VStack } from '@/shared/ui/vstack'
 import { savedApi } from './api'
 import { RecipeDialog, type EditDialog } from './recipe-dialog'
 import { RecipeMetrics } from './recipe-metrics'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 type DeleteTarget = { kind: 'group' | 'recipe'; id: string; name: string }
 export function SavedScreen() {
@@ -171,7 +172,7 @@ export function SavedScreen() {
             <VStack space="md">
               <Select
                 leadingIcon={Folder}
-                selectedTextSize="sm"
+                selectedTextSize={FontSize.sm}
                 value={filter}
                 onChange={setFilter}
                 options={[
@@ -290,7 +291,7 @@ function GroupActions({
   return (
     <Card>
       <VStack space="sm">
-        <Heading size="sm" className="text-foreground">
+        <Heading size={FontSize.sm} className="text-foreground">
           Группа «{group.name}»
         </Heading>
         <Button
@@ -328,10 +329,10 @@ function RecipeCard({
         <VStack space="sm">
           <Box className="flex-row items-start gap-2">
             <Box className="flex-1 gap-1">
-              <Heading size="md" className="text-foreground">
+              <Heading size={FontSize.md} className="text-foreground">
                 {recipe.name}
               </Heading>
-              <Text size="sm" className="text-muted-foreground">
+              <Text size={FontSize.sm} className="text-muted-foreground">
                 {groupName ?? 'Без группы'}
               </Text>
             </Box>
