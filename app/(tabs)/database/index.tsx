@@ -3,6 +3,7 @@ import { Package, Search, SlidersHorizontal } from 'lucide-react-native'
 import { useState } from 'react'
 
 import { ProductGrid } from '@/modules/catalog/components/product-grid'
+import { useProductsTotal } from '@/modules/catalog/api'
 import { useCatalogFilters } from '@/modules/catalog/filters-store'
 import { useCatalogProducts } from '@/modules/catalog/use-catalog-products'
 import { Box } from '@/shared/ui/box'
@@ -32,12 +33,17 @@ export default function DatabaseScreen() {
     hasFilters,
     loadMore,
   } = useCatalogProducts()
+  const total = useProductsTotal()
 
   async function refresh() {
     if (refreshing) return
     setRefreshing(true)
     try {
-      await Promise.allSettled([query.refetch(), dictionaries.refetch()])
+      await Promise.allSettled([
+        query.refetch(),
+        dictionaries.refetch(),
+        total.refetch(),
+      ])
     } finally {
       setRefreshing(false)
     }
@@ -83,6 +89,28 @@ export default function DatabaseScreen() {
           ) : null}
         </Pressable>
       </HStack>
+
+      {total.isSuccess ? (
+        <Text size="sm" className="text-muted-foreground">
+          Всего продуктов питания: {total.data}
+        </Text>
+      ) : total.isError ? (
+        <HStack space="sm" className="items-center">
+          <Text size="sm" className="flex-1 text-muted-foreground">
+            Не удалось загрузить общее количество продуктов
+          </Text>
+          <Button
+            label="Повторить"
+            variant="ghost"
+            className="min-h-10"
+            onPress={() => void total.refetch()}
+          />
+        </HStack>
+      ) : (
+        <Text size="sm" className="text-muted-foreground">
+          Всего продуктов питания: …
+        </Text>
+      )}
 
       {hasFilters ? (
         <HStack space="sm" className="items-center">
