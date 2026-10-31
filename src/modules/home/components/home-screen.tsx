@@ -240,13 +240,6 @@ export function HomeScreen() {
           </Card>
         </Pressable>
       </VStack>
-
-      <Button
-        label="О нас"
-        variant="ghost"
-        className="min-h-12"
-        onPress={() => router.push('/about')}
-      />
     </ScrollScreen>
   )
 }
