@@ -43,11 +43,12 @@ interface SelectProps {
   placeholder?: string
   isDisabled?: boolean
   isInvalid?: boolean
+  searchable?: boolean
   /** Compact selected value; trigger touch target stays 48 dp. */
   selectedTextSize?: typeof FontSize.sm
 }
 
-/** Searchable bottom panel shared by dictionary and form selections. */
+/** Bottom panel with optional search, shared by dictionary and form selections. */
 export function Select({
   leadingIcon,
   options,
@@ -57,17 +58,19 @@ export function Select({
   isDisabled,
   isInvalid,
   selectedTextSize,
+  searchable = true,
 }: SelectProps) {
   const insets = useSafeAreaInsets()
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
   const selectedLabel = options.find((option) => option.value === value)?.label
   const query = search.trim().toLocaleLowerCase('ru-RU')
-  const filtered = query
-    ? options.filter((option) =>
-        option.label.toLocaleLowerCase('ru-RU').includes(query),
-      )
-    : options
+  const filtered =
+    searchable && query
+      ? options.filter((option) =>
+          option.label.toLocaleLowerCase('ru-RU').includes(query),
+        )
+      : options
   const close = () => setOpen(false)
 
   return (
@@ -75,7 +78,9 @@ export function Select({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={selectedLabel || placeholder}
-        accessibilityHint="Открывает список с поиском"
+        accessibilityHint={
+          searchable ? 'Открывает список с поиском' : 'Открывает список'
+        }
         accessibilityState={{ disabled: Boolean(isDisabled), expanded: open }}
         disabled={isDisabled}
         className={cn(
@@ -135,16 +140,18 @@ export function Select({
               <ButtonIcon as={X} />
             </IconButton>
           </ModalHeader>
-          <Input
-            leadingIcon={Search}
-            accessibilityLabel="Поиск в списке"
-            placeholder="Поиск по названию"
-            value={search}
-            onChangeText={setSearch}
-            autoCorrect={false}
-            autoCapitalize="none"
-            returnKeyType="search"
-          />
+          {searchable ? (
+            <Input
+              leadingIcon={Search}
+              accessibilityLabel="Поиск в списке"
+              placeholder="Поиск по названию"
+              value={search}
+              onChangeText={setSearch}
+              autoCorrect={false}
+              autoCapitalize="none"
+              returnKeyType="search"
+            />
+          ) : null}
           <FlatList
             className="mt-3 flex-1"
             data={filtered}

@@ -333,6 +333,7 @@ export function CalculatorScreen() {
                     value: r.id,
                   }))}
                   value={referenceId}
+                  searchable={false}
                   onChange={(id) => s.changeReference(id)}
                   isDisabled={!!busy}
                   selectedTextSize={FontSize.sm}
