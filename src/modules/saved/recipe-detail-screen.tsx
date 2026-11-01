@@ -12,7 +12,7 @@ import { Card, ErrorState, Header, LoadingView, Screen } from '@/shared/ui/kit'
 import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
 import { savedApi } from './api'
-import { RecipeMetrics } from './recipe-metrics'
+import { RecipeQualityChart } from './recipe-quality-chart'
 import { FontSize } from '@/shared/theme/font-sizes'
 
 export function RecipeDetailScreen() {
@@ -94,7 +94,7 @@ export function RecipeDetailScreen() {
           contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 32 }}
           ListHeaderComponent={
             <VStack space="md">
-              <RecipeMetrics recipe={recipe} />
+              <RecipeQualityChart recipe={recipe} />
               <Text className="text-muted-foreground">
                 Группа:{' '}
                 {groups.data?.find((group) => group.id === recipe.group_id)
