@@ -34,6 +34,7 @@ import {
   updateNutrient,
   type NutrientInput,
 } from './api'
+import { NutrientToolbar, UNTYPED_NUTRIENTS } from './nutrient-toolbar'
 import { FontSize } from '@/shared/theme/font-sizes'
 
 interface Props {
@@ -71,6 +72,22 @@ export function NutrientDialog({
     mounted.current &&
     useSession.getState().user?.id === owner &&
     hasPermission(useSession.getState().user?.role, 'canEditProducts')
+  const [search, setSearch] = useState('')
+  const [typeId, setTypeId] = useState('')
+  const usedNames = new Set(
+    nutrients
+      .filter((item) => item.id !== nutrient?.id)
+      .map((item) => item.nutrient_name_id),
+  )
+  const availableNames = (dictionaries.data?.names ?? []).filter(
+    (item) => !usedNames.has(item.id),
+  )
+  const query = search.trim().toLocaleLowerCase('ru-RU')
+  const filteredNames = availableNames.filter(
+    (item) =>
+      (!typeId || (item.nutrient_type_id ?? UNTYPED_NUTRIENTS) === typeId) &&
+      item.name.toLocaleLowerCase('ru-RU').includes(query),
+  )
   const [nameId, setNameId] = useState(nutrient?.nutrient_name_id ?? '')
   const [unitId, setUnitId] = useState(nutrient?.unit_id ?? '')
   const [quantity, setQuantity] = useState(String(nutrient?.quantity ?? ''))
@@ -193,7 +210,26 @@ export function NutrientDialog({
             <Box className="gap-4">
               <FormField label="Нутриент" isRequired error={errors.name}>
                 <Select
-                  options={(dictionaries.data?.names ?? []).map((item) => ({
+                  searchable={false}
+                  selectedLabel={
+                    dictionaries.data?.names.find((item) => item.id === nameId)
+                      ?.name
+                  }
+                  emptyMessage={
+                    availableNames.length
+                      ? 'Нутриенты не найдены. Измените поиск или фильтр.'
+                      : 'Все нутриенты уже добавлены.'
+                  }
+                  listHeader={
+                    <NutrientToolbar
+                      search={search}
+                      onSearch={setSearch}
+                      typeId={typeId}
+                      onTypeChange={setTypeId}
+                      types={dictionaries.data?.types ?? []}
+                    />
+                  }
+                  options={filteredNames.map((item) => ({
                     value: item.id,
                     label: item.name,
                   }))}
