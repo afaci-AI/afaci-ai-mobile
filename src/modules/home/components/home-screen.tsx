@@ -4,13 +4,10 @@ import {
   Bookmark,
   Calculator,
   Database,
-  FlaskConical,
   Leaf,
-  MapPin,
   SlidersHorizontal,
   Sparkles,
 } from 'lucide-react-native'
-import type { LucideIcon } from 'lucide-react-native'
 
 import { useSession } from '@/shared/session/store'
 import { Box } from '@/shared/ui/box'
@@ -48,58 +45,15 @@ const tools = [
     href: '/saved',
     action: 'Перейти к рецептурам',
   },
-] as const
-
-const features = [
   {
-    icon: Database,
-    title: 'База продуктов',
+    icon: SlidersHorizontal,
+    title: 'Улучшайте рецептуру без потери качества',
     description:
-      'Химический, аминокислотный и минеральный состав продуктов питания.',
-  },
-  {
-    icon: Calculator,
-    title: 'Расчёт рецептуры',
-    description:
-      'Составляйте рецептуры из выбранных ингредиентов и оценивайте их пищевую ценность.',
-  },
-  {
-    icon: MapPin,
-    title: 'Данные по регионам',
-    description:
-      'Изучайте состав продуктов с учётом региональных особенностей Кыргызстана.',
-  },
-  {
-    icon: FlaskConical,
-    title: 'Нутриентный профиль',
-    description:
-      'Белки, жиры, углеводы, витамины, макро- и микроэлементы в карточке продукта.',
+      'Базовая оптимизация повышает биологическую ценность, а оптимизация по цене снижает стоимость. В обоих режимах БЦ и V не уменьшаются, а G не растёт. Расчёт выполняется на сервере.',
+    href: '/calculator',
+    action: 'Оптимизировать рецептуру',
   },
 ] as const
-
-interface FeatureProps {
-  readonly icon: LucideIcon
-  readonly title: string
-  readonly description: string
-}
-
-function Feature({ icon, title, description }: FeatureProps) {
-  return (
-    <HStack space="md" className="items-start">
-      <Box className="h-12 w-12 items-center justify-center rounded-xl bg-muted">
-        <Icon as={icon} className="text-foreground" />
-      </Box>
-      <VStack space="xs" className="flex-1">
-        <Text bold className="text-foreground">
-          {title}
-        </Text>
-        <Text size={FontSize.sm} className="text-muted-foreground">
-          {description}
-        </Text>
-      </VStack>
-    </HStack>
-  )
-}
 
 export function HomeScreen() {
   const router = useRouter()
@@ -139,8 +93,8 @@ export function HomeScreen() {
               </VStack>
             </HStack>
             <Text size={FontSize.sm} className="text-muted-foreground">
-              Найдите продукт, выберите регион и откройте его нутриентный
-              состав. База доступна без входа.
+              Продукты питания по регионам Кыргызстана. Найдите продукт и
+              откройте его нутриентный состав. База доступна без входа.
             </Text>
             <HStack space="sm" className="items-center">
               <Text bold size={FontSize.sm} className="flex-1 text-primary">
@@ -201,58 +155,6 @@ export function HomeScreen() {
             </Card>
           </Pressable>
         ))}
-      </VStack>
-
-      <VStack space="lg">
-        <Heading size={FontSize.xl} className="text-foreground">
-          Возможности
-        </Heading>
-        {features.map((feature) => (
-          <Feature key={feature.title} {...feature} />
-        ))}
-      </VStack>
-
-      <VStack space="lg">
-        <Heading size={FontSize.xl} className="text-foreground">
-          Оптимизация рецептур
-        </Heading>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`Оптимизация рецептур${isGuest ? '. Требуется вход' : ''}`}
-          onPress={() => router.push('/calculator')}
-          className="rounded-xl data-[active=true]:bg-accent"
-        >
-          <Card>
-            <HStack space="md" className="items-start">
-              <Box className="h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                <Icon as={SlidersHorizontal} className="text-primary" />
-              </Box>
-              <VStack space="sm" className="flex-1">
-                <Heading size={FontSize.md} className="text-card-foreground">
-                  Улучшайте рецептуру без потери качества
-                </Heading>
-                {isGuest ? (
-                  <Badge
-                    label="Требуется вход"
-                    variant="outline"
-                    className="self-start"
-                  />
-                ) : null}
-              </VStack>
-            </HStack>
-            <Text size={FontSize.sm} className="text-muted-foreground">
-              Базовая оптимизация повышает биологическую ценность, а оптимизация
-              по цене снижает стоимость. В обоих режимах БЦ и V не уменьшаются,
-              а G не растёт. Расчёт выполняется на сервере.
-            </Text>
-            <HStack space="sm" className="items-center">
-              <Text bold size={FontSize.sm} className="flex-1 text-primary">
-                Оптимизировать рецептуру
-              </Text>
-              <Icon as={ArrowRight} size="sm" className="text-primary" />
-            </HStack>
-          </Card>
-        </Pressable>
       </VStack>
     </ScrollScreen>
   )
