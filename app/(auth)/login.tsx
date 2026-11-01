@@ -3,7 +3,7 @@ import { useFocusEffect, useRouter } from 'expo-router'
 import { Database, Eye, EyeOff } from 'lucide-react-native'
 import { useCallback, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { BackHandler, Platform } from 'react-native'
+import { BackHandler } from 'react-native'
 import { z } from 'zod'
 
 import { useSession } from '@/shared/session/store'
@@ -72,13 +72,11 @@ export default function LoginScreen() {
   })
 
   return (
-    <Screen>
-      <Header title="Вход" onBack={goBack} />
-      <KeyboardAvoidingView
-        className="flex-1"
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
+    <KeyboardAvoidingView className="flex-1" behavior="padding">
+      <Screen>
+        <Header title="Вход" onBack={goBack} />
         <ScrollView
+          className="flex-1"
           contentContainerClassName="grow justify-center p-4"
           keyboardShouldPersistTaps="handled"
         >
@@ -189,7 +187,7 @@ export default function LoginScreen() {
             Нет аккаунта? Обратитесь к администратору.
           </Text>
         </ScrollView>
-      </KeyboardAvoidingView>
-    </Screen>
+      </Screen>
+    </KeyboardAvoidingView>
   )
 }
