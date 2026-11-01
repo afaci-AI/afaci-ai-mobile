@@ -1,11 +1,16 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
-import { Info, Plus } from 'lucide-react-native'
+import { Info, Plus, Save } from 'lucide-react-native'
 
 import { useSession } from '@/shared/session/store'
 import { formatNumber, formatSom } from '@/shared/lib/format'
 import { Box } from '@/shared/ui/box'
+import {
+  Button as IconButton,
+  ButtonIcon,
+  ButtonText,
+} from '@/shared/ui/button'
 import { Text } from '@/shared/ui/text'
 import { Icon } from '@/shared/ui/icon'
 import { Pressable } from '@/shared/ui/pressable'
@@ -13,6 +18,7 @@ import { HStack } from '@/shared/ui/hstack'
 import {
   Button,
   Card,
+  ConfirmDialog,
   ErrorState,
   FormField,
   Header,
@@ -50,9 +56,10 @@ export function CalculatorScreen() {
   const queryClient = useQueryClient()
   const [editorRow, setEditorRow] = useState<CalculatorRow | null>(null)
   const [saveOpen, setSaveOpen] = useState(false)
+  const [resetOpen, setResetOpen] = useState(false)
+  const [deleteRow, setDeleteRow] = useState<CalculatorRow | null>(null)
   const [optimizeOpen, setOptimizeOpen] = useState(false)
   const [showReference, setShowReference] = useState(false)
-  const [loadOpen, setLoadOpen] = useState(false)
   const [busy, setBusy] = useState<
     'compute' | 'optimize' | 'save' | 'load' | null
   >(null)
@@ -78,11 +85,6 @@ export function CalculatorScreen() {
     queryKey: ['calculator', 'groups'],
     queryFn: calculatorApi.groups,
     enabled: saveOpen,
-  })
-  const saved = useQuery({
-    queryKey: ['calculator', 'saved'],
-    queryFn: calculatorApi.savedRecipes,
-    enabled: loadOpen,
   })
   const referenceId =
     s.referenceId ||
@@ -142,7 +144,6 @@ export function CalculatorScreen() {
       s.setReferenceId(recipe.reference_protein_id)
       s.setCostEnabled(recipe.items.some((i) => i.price_per_kg != null))
       s.setEditing(recipe)
-      setLoadOpen(false)
     } catch (e) {
       if (active() && revision === s.revision.current) setError(errorMessage(e))
     } finally {
@@ -315,8 +316,8 @@ export function CalculatorScreen() {
       </Screen>
     )
   return (
-    <>
-      <ScrollScreen>
+    <Box className="flex-1">
+      <ScrollScreen contentClassName="pb-24">
         <Header title="Калькулятор" subtitle="Расчёт по методике Липатова" />
         {s.editing ? (
           <Text className="text-foreground">
@@ -370,19 +371,9 @@ export function CalculatorScreen() {
               costEnabled={s.costEnabled}
               disabled={!!busy}
               onEdit={() => setEditorRow(row)}
-              onDelete={() => {
-                s.changeRows(s.rows.filter((r) => r.key !== row.key))
-                setError(undefined)
-              }}
+              onDelete={() => setDeleteRow(row)}
             />
           ))}
-        <Button
-          label="Добавить ингредиент"
-          icon={Plus}
-          variant="outline"
-          disabled={!!busy}
-          onPress={() => setEditorRow(emptyRow())}
-        />
         <Card>
           <Text
             className={sumValid ? 'text-foreground' : 'text-destructive-text'}
@@ -403,69 +394,28 @@ export function CalculatorScreen() {
         {error ? (
           <ErrorState title="Операция не выполнена" message={error} />
         ) : null}
-        <Button
-          label="Рассчитать"
-          disabled={!canCompute || !!busy}
-          isLoading={busy === 'compute'}
-          onPress={() => void compute()}
-        />
-        <Button
-          label="Сохранить рецептуру"
-          variant="outline"
-          disabled={!validRows || !validPrices || !referenceId || !!busy}
-          onPress={() => {
-            setSaveError(undefined)
-            setSaveOpen(true)
-          }}
-        />
-        <Button
-          label="Оптимизировать стоимость"
-          variant="outline"
-          disabled={
-            !s.costEnabled ||
-            s.rows.length === 0 ||
-            !validPrices ||
-            s.rows.some((r) => !r.product_id) ||
-            !!busy
-          }
-          onPress={() => {
-            setOptimizeError(undefined)
-            setOptimizeOpen(true)
-          }}
-        />
-        <Button
-          label="Открыть сохранённую рецептуру"
-          variant="outline"
-          disabled={!!busy}
-          onPress={() => setLoadOpen(!loadOpen)}
-        />
-        {loadOpen ? (
-          <Card>
-            {saved.isPending ? (
-              <LoadingView />
-            ) : saved.error ? (
-              <ErrorState
-                message={errorMessage(saved.error)}
-                onRetry={() => void saved.refetch()}
-              />
-            ) : saved.data?.length ? (
-              <Select
-                options={saved.data.map((r) => ({
-                  label: r.name,
-                  value: r.id,
-                }))}
-                value={null}
-                placeholder="Выберите рецептуру"
-                onChange={(id) => void loadRecipe(id)}
-                isDisabled={!!busy}
-              />
-            ) : (
-              <Text className="text-muted-foreground">
-                Сохранённых рецептур пока нет
-              </Text>
-            )}
-          </Card>
-        ) : null}
+        <HStack space="sm" className="items-center">
+          <Button
+            label="Рассчитать"
+            className="flex-1"
+            disabled={!canCompute || !!busy}
+            isLoading={busy === 'compute'}
+            onPress={() => void compute()}
+          />
+          <IconButton
+            variant="outline"
+            size="icon"
+            className="h-12 w-12"
+            accessibilityLabel="Сохранить рецептуру"
+            isDisabled={!validRows || !validPrices || !referenceId || !!busy}
+            onPress={() => {
+              setSaveError(undefined)
+              setSaveOpen(true)
+            }}
+          >
+            <ButtonIcon as={Save} />
+          </IconButton>
+        </HStack>
         <Button
           label="Загрузить пример"
           variant="secondary"
@@ -494,18 +444,14 @@ export function CalculatorScreen() {
             onRetry={() => void examples.refetch()}
           />
         ) : null}
-        <Button
-          label="Сбросить"
-          variant="ghost"
-          disabled={!!busy}
-          onPress={() => {
-            s.changeRows([])
-            s.setReferenceId('')
-            s.setCostEnabled(false)
-            s.setEditing(null)
-            setError(undefined)
-          }}
-        />
+        <IconButton
+          variant="outline"
+          className="min-h-12 border-destructive data-[active=true]:bg-destructive/10 dark:border-destructive dark:data-[active=true]:bg-destructive/10"
+          isDisabled={!!busy}
+          onPress={() => setResetOpen(true)}
+        >
+          <ButtonText className="text-destructive-text">Сбросить</ButtonText>
+        </IconButton>
         {s.result ? (
           <Button
             label="Открыть результат"
@@ -514,6 +460,52 @@ export function CalculatorScreen() {
           />
         ) : null}
       </ScrollScreen>
+      {!editorRow && !saveOpen && !showReference && !resetOpen && !deleteRow ? (
+        <IconButton
+          size="icon"
+          className="absolute right-4 bottom-4 h-14 w-14 rounded-full shadow-lg"
+          accessibilityLabel="Добавить ингредиент"
+          isDisabled={!!busy}
+          onPress={() => setEditorRow(emptyRow())}
+        >
+          <ButtonIcon as={Plus} className="h-6 w-6" />
+        </IconButton>
+      ) : null}
+      <ConfirmDialog
+        isOpen={resetOpen}
+        title="Сбросить рецептуру?"
+        description="Все ингредиенты будут удалены, результаты расчёта и несохранённые изменения — очищены."
+        confirmLabel="Сбросить"
+        isDestructive
+        onClose={() => setResetOpen(false)}
+        onConfirm={() => {
+          if (busy) return
+          s.changeRows([])
+          s.setReferenceId('')
+          s.setCostEnabled(false)
+          s.setEditing(null)
+          setError(undefined)
+          setResetOpen(false)
+        }}
+      />
+      <ConfirmDialog
+        isOpen={deleteRow !== null}
+        title="Удалить ингредиент?"
+        description={
+          deleteRow
+            ? `«${deleteRow.product_name || 'Ингредиент'}» будет удалён из рецептуры. Результат расчёта будет сброшен.`
+            : undefined
+        }
+        confirmLabel="Удалить"
+        isDestructive
+        onClose={() => setDeleteRow(null)}
+        onConfirm={() => {
+          if (busy || !deleteRow) return
+          s.changeRows(s.rows.filter((row) => row.key !== deleteRow.key))
+          setError(undefined)
+          setDeleteRow(null)
+        }}
+      />
       <ReferenceInfoDialog
         open={showReference}
         reference={reference}
@@ -562,7 +554,7 @@ export function CalculatorScreen() {
         error={optimizeError}
         onOptimize={(c, b) => void optimize(c, b)}
       />
-    </>
+    </Box>
   )
 }
 
