@@ -7,7 +7,6 @@ import {
   Pencil,
   Search,
   SlidersHorizontal,
-  Trash2,
 } from 'lucide-react-native'
 import { Badge, BadgeText } from '@/shared/ui/badge'
 import { Button as IconButton, ButtonIcon } from '@/shared/ui/button'
@@ -62,7 +61,7 @@ export function AdminUsersScreen() {
   const activeFilterCount = [role, status].filter(Boolean).length
   const [action, setAction] = useState<{
     user: User
-    type: 'block' | 'unblock' | 'delete'
+    type: 'block' | 'unblock'
   } | null>(null)
   const client = useQueryClient()
   const toast = useAppToast()
@@ -239,22 +238,6 @@ export function AdminUsersScreen() {
                     >
                       <ButtonIcon as={item.isActive ? Lock : LockOpen} />
                     </IconButton>
-                    <IconButton
-                      size="icon"
-                      variant="ghost"
-                      className="min-h-12 min-w-12"
-                      accessibilityLabel={`Удалить навсегда пользователя ${item.name}`}
-                      isDisabled={mutation.isPending}
-                      onPress={() => {
-                        mutation.reset()
-                        setAction({ user: item, type: 'delete' })
-                      }}
-                    >
-                      <ButtonIcon
-                        as={Trash2}
-                        className="text-destructive-text"
-                      />
-                    </IconButton>
                   </>
                 ) : null}
               </HStack>
@@ -265,25 +248,21 @@ export function AdminUsersScreen() {
       <ConfirmDialog
         isOpen={Boolean(action)}
         title={
-          action?.type === 'delete'
-            ? 'Удалить пользователя навсегда?'
-            : action?.type === 'block'
-              ? 'Заблокировать пользователя?'
-              : 'Разблокировать пользователя?'
+          action?.type === 'block'
+            ? 'Заблокировать пользователя?'
+            : 'Разблокировать пользователя?'
         }
         description={[
           action?.user.email,
-          action?.type === 'delete'
-            ? 'Все его рецептуры и группы будут удалены без возможности восстановления.'
+          action?.type === 'block'
+            ? 'Вход будет отключён. Рецептуры и группы сохранятся.'
             : '',
           mutation.error ? message(mutation.error) : '',
         ]
           .filter(Boolean)
           .join('\n')}
         isDestructive={action?.type !== 'unblock'}
-        confirmLabel={
-          action?.type === 'delete' ? 'Удалить навсегда' : 'Подтвердить'
-        }
+        confirmLabel="Подтвердить"
         isLoading={mutation.isPending}
         onConfirm={() => mutation.mutate()}
         onClose={() => {

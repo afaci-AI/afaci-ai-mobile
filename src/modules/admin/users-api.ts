@@ -61,15 +61,12 @@ export async function saveUser(id: string | undefined, body: UserInput) {
     }),
   )
 }
-export async function changeUserState(
-  user: User,
-  action: 'block' | 'unblock' | 'delete',
-) {
+export async function changeUserState(user: User, action: 'block' | 'unblock') {
   assertUserAdmin()
   if (user.id === useSession.getState().user?.id)
     throw new Error('Это действие недоступно для собственной учётной записи.')
   const path = `/users/${encodeURIComponent(user.id)}`
-  return request(action === 'delete' ? `${path}/permanent` : path, {
+  return request(path, {
     method: action === 'unblock' ? 'PATCH' : 'DELETE',
     ...(action === 'unblock' ? { body: { is_active: true } } : {}),
   })
