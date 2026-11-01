@@ -7,6 +7,7 @@ import { hasPermission } from '@/shared/session/permissions'
 import { useSession } from '@/shared/session/store'
 import { deleteNutrient, invalidateAdminProducts } from './api'
 import { NutrientDialog } from './nutrient-dialog'
+import { NutrientToolbar, UNTYPED_NUTRIENTS } from './nutrient-toolbar'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import {
@@ -101,15 +102,35 @@ export function AdminProductDetailScreen({
   const nutrients = useProductNutrients(id ?? '')
   const catalog = useCatalogDictionaries()
   const dictionaries = useNutrientDictionaries()
+  const [search, setSearch] = useState('')
+  const [typeId, setTypeId] = useState('')
+  const filteredNutrients = useMemo(() => {
+    const names = new Map(
+      (dictionaries.data?.names ?? []).map((item) => [item.id, item]),
+    )
+    const query = search.trim().toLocaleLowerCase('ru-RU')
+    return (nutrients.data ?? []).filter((item) => {
+      const name = names.get(item.nutrient_name_id)
+      return (
+        (!typeId ||
+          (name?.nutrient_type_id ??
+            item.nutrient_type_id ??
+            UNTYPED_NUTRIENTS) === typeId) &&
+        (name?.name ?? 'Название не указано')
+          .toLocaleLowerCase('ru-RU')
+          .includes(query)
+      )
+    })
+  }, [nutrients.data, dictionaries.data, search, typeId])
   const sections = useMemo(
     () =>
       groupNutrients(
-        nutrients.data ?? [],
+        filteredNutrients,
         dictionaries.data?.names ?? [],
         dictionaries.data?.types ?? [],
         dictionaries.data?.units ?? [],
       ),
-    [nutrients.data, dictionaries.data],
+    [filteredNutrients, dictionaries.data],
   )
   const macros = useMemo(
     () =>
@@ -257,6 +278,19 @@ export function AdminProductDetailScreen({
                 Пищевая ценность на 100 г продукта. Значения сгруппированы по
                 типу и единице измерения.
               </Text>
+              <NutrientToolbar
+                search={search}
+                onSearch={setSearch}
+                typeId={typeId}
+                onTypeChange={setTypeId}
+                types={dictionaries.data?.types ?? []}
+              />
+              {Boolean(nutrients.data?.length) && !filteredNutrients.length ? (
+                <EmptyState
+                  title="Нутриенты не найдены"
+                  description="Попробуйте другое название или сбросьте фильтры."
+                />
+              ) : null}
               {nutrients.data?.length === 0 ? (
                 <EmptyState
                   title="Состав пока не добавлен"

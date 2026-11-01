@@ -5,7 +5,7 @@ import {
   X,
   type LucideIcon,
 } from 'lucide-react-native'
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import {
   ReduceMotion,
   SlideInDown,
@@ -44,6 +44,9 @@ interface SelectProps {
   isDisabled?: boolean
   isInvalid?: boolean
   searchable?: boolean
+  listHeader?: ReactNode
+  selectedLabel?: string
+  emptyMessage?: string
   /** Compact selected value; trigger touch target stays 48 dp. */
   selectedTextSize?: typeof FontSize.sm
 }
@@ -59,11 +62,15 @@ export function Select({
   isInvalid,
   selectedTextSize,
   searchable = true,
+  listHeader,
+  selectedLabel: suppliedLabel,
+  emptyMessage,
 }: SelectProps) {
   const insets = useSafeAreaInsets()
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
-  const selectedLabel = options.find((option) => option.value === value)?.label
+  const selectedLabel =
+    suppliedLabel ?? options.find((option) => option.value === value)?.label
   const query = search.trim().toLocaleLowerCase('ru-RU')
   const filtered =
     searchable && query
@@ -152,6 +159,7 @@ export function Select({
               returnKeyType="search"
             />
           ) : null}
+          {listHeader}
           <FlatList
             className="mt-3 flex-1"
             data={filtered}
@@ -160,7 +168,8 @@ export function Select({
             keyboardDismissMode="on-drag"
             ListEmptyComponent={
               <Text className="px-3 py-6 text-muted-foreground">
-                {options.length ? 'Ничего не найдено.' : 'Список пока пуст.'}
+                {emptyMessage ??
+                  (options.length ? 'Ничего не найдено.' : 'Список пока пуст.')}
               </Text>
             }
             renderItem={({ item }) => (
