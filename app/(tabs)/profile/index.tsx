@@ -126,7 +126,7 @@ export default function ProfileScreen() {
 
           <Button
             label="Выйти"
-            variant="outline"
+            variant="destructive"
             icon={LogOut}
             onPress={() => setLogoutOpen(true)}
           />
