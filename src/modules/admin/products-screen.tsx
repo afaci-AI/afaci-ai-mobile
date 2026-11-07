@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { router } from 'expo-router'
 import { ArrowDownUp, SlidersHorizontal, Search } from 'lucide-react-native'
-import { useCatalogDictionaries, type FlatProduct } from '@/modules/catalog/api'
+import type { FlatProduct } from '@/modules/catalog/api'
 import { hasPermission } from '@/shared/session/permissions'
 import { useSession } from '@/shared/session/store'
 import { Box } from '@/shared/ui/box'
@@ -30,40 +30,9 @@ import {
   deleteProduct,
   invalidateAdminProducts,
   listAdminProducts,
-  type AdminProductFilters,
 } from './api'
 const PAGE_SIZE = 20
 
-/** Dictionary filters on the server match substrings. Scan raw pages until
- * this page has enough exact matches, preserving the server's stable order. */
-async function listExactProductPage(
-  filters: AdminProductFilters,
-  page: number,
-  signal: AbortSignal,
-): Promise<FlatProduct[]> {
-  if (!(filters.category || filters.subcategory || filters.region)) {
-    return listAdminProducts(filters, page * PAGE_SIZE, PAGE_SIZE + 1)
-  }
-  const matches: FlatProduct[] = []
-  const required = (page + 1) * PAGE_SIZE + 1
-  const batchSize = 100
-  for (let offset = 0; matches.length < required; offset += batchSize) {
-    if (signal.aborted) throw new Error('Запрос отменён.')
-    const rows = await listAdminProducts(filters, offset, batchSize)
-    if (signal.aborted) throw new Error('Запрос отменён.')
-    matches.push(
-      ...rows.filter(
-        (row) =>
-          (!filters.category || row.category_name === filters.category) &&
-          (!filters.subcategory ||
-            row.subcategory_name === filters.subcategory) &&
-          (!filters.region || row.region_name === filters.region),
-      ),
-    )
-    if (rows.length < batchSize) break
-  }
-  return matches.slice(page * PAGE_SIZE, required)
-}
 const message = (error: unknown) =>
   error instanceof Error ? error.message : 'Не удалось загрузить продукты.'
 export function AdminProductsScreen() {
@@ -79,7 +48,6 @@ export function AdminProductsScreen() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [sortOpen, setSortOpen] = useState(false)
   const [deleting, setDeleting] = useState<FlatProduct | null>(null)
-  const dictionaries = useCatalogDictionaries()
   const role = useSession((s) => s.user?.role)
   const owner = useSession((s) => s.user?.id)
   const canEdit = hasPermission(role, 'canEditProducts')
@@ -88,24 +56,17 @@ export function AdminProductsScreen() {
   const [sortBy, direction] = sort.split(':')
   const filters = {
     product: search,
-    category:
-      dictionaries.data?.categories.find((item) => item.id === categoryId)
-        ?.name ?? '',
-    subcategory:
-      dictionaries.data?.subcategories.find((item) => item.id === subcategoryId)
-        ?.name ?? '',
-    region:
-      dictionaries.data?.regions.find((item) => item.id === regionId)?.name ??
-      '',
-
+    category_id: categoryId,
+    subcategory_id: subcategoryId,
+    region_id: regionId,
     sort_by: sortBy,
     sort_order: direction as 'asc' | 'desc',
   }
+  // Фильтры справочников точные и применяются на сервере до пагинации.
+  // PAGE_SIZE + 1 строка показывает, есть ли следующая страница.
   const products = useQuery({
     queryKey: ['admin', 'products', filters, page],
-    queryFn: ({ signal }) => listExactProductPage(filters, page, signal),
-    enabled:
-      !(categoryId || subcategoryId || regionId) || Boolean(dictionaries.data),
+    queryFn: () => listAdminProducts(filters, page * PAGE_SIZE, PAGE_SIZE + 1),
   })
   const active = () =>
     useSession.getState().user?.id === owner &&
@@ -201,12 +162,6 @@ export function AdminProductsScreen() {
                 <ButtonIcon as={ArrowDownUp} />
               </IconButton>
             </HStack>
-            {dictionaries.error && (categoryId || subcategoryId || regionId) ? (
-              <ErrorState
-                message={message(dictionaries.error)}
-                onRetry={() => void dictionaries.refetch()}
-              />
-            ) : null}
             {products.error ? (
               <ErrorState
                 message={message(products.error)}

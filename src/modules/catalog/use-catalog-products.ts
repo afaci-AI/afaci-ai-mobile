@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import {
   CATALOG_PAGE_SIZE,
@@ -20,21 +20,13 @@ export function useCatalogProducts() {
   const regionId = useCatalogFilters((state) => state.regionId)
   const dictionaries = useCatalogDictionaries()
 
-  const categories = dictionaries.data?.categories ?? []
-  const subcategories = dictionaries.data?.subcategories ?? []
-  const regions = dictionaries.data?.regions ?? []
-  const categoryName = categories.find((item) => item.id === categoryId)?.name
-  const subcategoryName = subcategories.find(
-    (item) => item.id === subcategoryId,
-  )?.name
-  const regionName = regions.find((item) => item.id === regionId)?.name
-
+  // Справочники фильтруются на сервере по точным ID до пагинации, поэтому
+  // список не нужно дофильтровывать и дозагружать на клиенте.
   const filters: ProductFilters = {
     product: search || undefined,
-    // The flat-table endpoint filters names (ILIKE), not dictionary IDs.
-    category: categoryName,
-    subcategory: subcategoryName,
-    region: regionName,
+    category_id: categoryId === ALL ? undefined : categoryId,
+    subcategory_id: subcategoryId === ALL ? undefined : subcategoryId,
+    region_id: regionId === ALL ? undefined : regionId,
   }
 
   const query = useInfiniteQuery({
@@ -51,30 +43,10 @@ export function useCatalogProducts() {
     const seen = new Set<string>()
     return (query.data?.pages.flat() ?? []).filter((product) => {
       if (seen.has(product.product_id)) return false
-      // Dictionary filters are substring matches on the server, so «Мясо»
-      // also returns «Мясо птицы». Keep only exact dictionary hits, so the
-      // selection matches the web catalog.
-      if (categoryName && product.category_name !== categoryName) return false
-      if (subcategoryName && product.subcategory_name !== subcategoryName)
-        return false
-      if (regionName && product.region_name !== regionName) return false
       seen.add(product.product_id)
       return true
     })
-  }, [query.data, categoryName, subcategoryName, regionName])
-
-  // A whole page may consist of near-matches dropped above, so keep paging
-  // while nothing exact is visible yet.
-  useEffect(() => {
-    if (
-      rows.length === 0 &&
-      query.hasNextPage &&
-      !query.isFetching &&
-      !query.isError
-    ) {
-      void query.fetchNextPage()
-    }
-  }, [rows.length, query])
+  }, [query.data])
 
   const activeFilterCount = countActiveFilters({
     categoryId,
