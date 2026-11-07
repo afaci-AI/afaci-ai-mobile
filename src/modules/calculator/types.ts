@@ -57,10 +57,23 @@ export interface ComputeRecipeItem extends CalcItem {
   subcategory?: string | null
 }
 
+export interface VerdictDeficit {
+  name: string
+  score: number
+  m_j: number
+  reference: number
+  deficit: number
+}
+
 export interface ComputeVerdict {
-  level: 'good' | 'moderate' | 'poor'
+  /** complete — все скоры ≥ 100 % по выбранному эталону; incomplete — есть НАК ниже эталона. */
+  level: 'complete' | 'incomplete'
   headline: string
   points: string[]
+  reference?: { name: string; year?: number | null }
+  deficits?: VerdictDeficit[]
+  /** Пометка «Экспериментальная функция» приходит от backend. */
+  experimental_note?: string
 }
 
 export interface ComputeResult {
