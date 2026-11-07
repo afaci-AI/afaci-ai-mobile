@@ -42,10 +42,12 @@ export interface FlatProduct {
 }
 
 export interface ProductFilters {
+  /** Часть названия: регистр, е/ё и пробелы backend не учитывает. */
   product?: string
-  category?: string
-  subcategory?: string
-  region?: string
+  /** Точные фильтры по ID справочников, применяются до пагинации. */
+  category_id?: string
+  subcategory_id?: string
+  region_id?: string
 }
 
 // Этап 9: список базы продуктов подгружается по 10 элементов при прокрутке.
@@ -62,7 +64,6 @@ export function listProducts(
     sort_by: 'product_name',
     sort_order: 'asc',
   })
-  // /table/products filters by names, rather than dictionary UUIDs.
   for (const [key, value] of Object.entries(filters)) {
     if (value?.trim()) params.set(key, value.trim())
   }
