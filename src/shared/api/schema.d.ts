@@ -863,7 +863,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Ранжирование рецептур по БЦ, КРАС, V, G */
+        /** Ранжирование рецептур по БЦ, КРАС, U, G */
         post: operations["ranking_api_v1_saved_ranking_post"];
         delete?: never;
         options?: never;
@@ -1504,10 +1504,15 @@ export interface components {
              */
             kras: number;
             /**
-             * V
-             * @default 0.25
+             * U
+             * @description Коэффициент утилитарности; прежнее имя v принимается как устаревшее.
              */
-            v: number;
+            u?: number | null;
+            /**
+             * V
+             * @deprecated Используйте u.
+             */
+            v?: number | null;
             /**
              * G
              * @default 0.25

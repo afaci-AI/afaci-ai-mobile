@@ -8,7 +8,7 @@ import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
 
 interface MetricDefinition {
-  key: 'bc' | 'kras' | 'V' | 'G'
+  key: 'bc' | 'kras' | 'U' | 'G'
   title: string
   unit: string
   digits: number
@@ -34,8 +34,8 @@ const metrics: MetricDefinition[] = [
     colorClass: 'bg-chart-2',
   },
   {
-    key: 'V',
-    title: 'V — коэффициент утилитарности',
+    key: 'U',
+    title: 'U — коэффициент утилитарности',
     unit: '',
     digits: 4,
     baseMaximum: 1,

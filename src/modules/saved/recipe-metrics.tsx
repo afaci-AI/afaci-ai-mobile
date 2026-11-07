@@ -11,7 +11,7 @@ export function isCalculated(recipe: SavedRecipe) {
 
 export function RecipeMetrics({ recipe }: { recipe: SavedRecipe }) {
   if (!isCalculated(recipe)) return <Badge label="Черновик" />
-  const summary = `БЦ ${formatNumber(recipe.metrics.bc)}% · КРАС ${formatNumber(recipe.metrics.kras)}% · V ${formatNumber(recipe.metrics.V, 4)} · G ${formatNumber(recipe.metrics.G, 4)}`
+  const summary = `БЦ ${formatNumber(recipe.metrics.bc)}% · КРАС ${formatNumber(recipe.metrics.kras)}% · U ${formatNumber(recipe.metrics.U, 4)} · G ${formatNumber(recipe.metrics.G, 4)}`
   return (
     <ScrollView
       horizontal

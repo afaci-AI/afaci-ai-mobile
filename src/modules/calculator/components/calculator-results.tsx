@@ -200,7 +200,7 @@ export const CalculatorResults = memo(function CalculatorResults({
           value={`${nf(q.kras, 1)}%`}
         />
         <Metric label="БЦ — биологическая ценность" value={`${nf(q.bc, 1)}%`} />
-        <Metric label="V — коэффициент утилитарности" value={nf(q.V)} />
+        <Metric label="U — коэффициент утилитарности" value={nf(q.U)} />
         <Metric
           label="G — сопоставимая избыточность"
           value={`${nf(q.G)} г/100 г белка`}

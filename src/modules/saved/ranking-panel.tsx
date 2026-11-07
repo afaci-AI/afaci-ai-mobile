@@ -138,7 +138,7 @@ function RankingSelection({
       key: 'chart-heading',
       title: 'Композитный балл (0–100)',
       description:
-        'Нормировка БЦ↑, КРАС↓, V↑, G↓ по выбранным рецептурам, равные веса.',
+        'Нормировка БЦ↑, КРАС↓, U↑, G↓ по выбранным рецептурам, равные веса.',
     })
     rows.push(
       ...result.ranking.map((recipe): Row => ({
@@ -151,7 +151,7 @@ function RankingSelection({
       type: 'section',
       key: 'table-heading',
       title: 'От лучшей к худшей',
-      description: 'Показатели сравнения. V — коэффициент утилитарности.',
+      description: 'Показатели сравнения. U — коэффициент утилитарности.',
     })
     rows.push(
       ...result.ranking.map((recipe): Row => ({
@@ -321,8 +321,8 @@ function RankingSelection({
                   ) : null}
                   <Text size={FontSize.sm} className="text-muted-foreground">
                     БЦ {formatNumber(item.recipe.metrics.bc, 1)}% · КРАС{' '}
-                    {formatNumber(item.recipe.metrics.kras, 1)}% · V{' '}
-                    {formatNumber(item.recipe.metrics.V)} · G{' '}
+                    {formatNumber(item.recipe.metrics.kras, 1)}% · U{' '}
+                    {formatNumber(item.recipe.metrics.U)} · G{' '}
                     {formatNumber(item.recipe.metrics.G)}
                   </Text>
                 </VStack>
@@ -406,7 +406,7 @@ function RankingMetrics({
         {[
           ['БЦ, %', formatNumber(recipe.bc, 1)],
           ['КРАС, %', formatNumber(recipe.kras, 1)],
-          ['V', formatNumber(recipe.V)],
+          ['U', formatNumber(recipe.U)],
           ['G', formatNumber(recipe.G)],
           ['Балл', formatNumber(recipe.composite * 100, 0)],
         ].map(([label, value]) => (
