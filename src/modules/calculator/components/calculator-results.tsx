@@ -54,15 +54,25 @@ export const CalculatorResults = memo(function CalculatorResults({
           <Heading size={FontSize.md} className="text-foreground">
             {result.verdict.headline}
           </Heading>
-          <Badge
-            label={
-              result.verdict.level === 'good'
-                ? 'Высокое качество'
-                : result.verdict.level === 'poor'
-                  ? 'Низкое качество'
-                  : 'Удовлетворительно'
-            }
-          />
+          {result.verdict.level === 'complete' ||
+          result.verdict.level === 'incomplete' ? (
+            <Badge
+              label={
+                result.verdict.level === 'complete'
+                  ? 'Полноценный по эталону'
+                  : 'Неполноценный по эталону'
+              }
+            />
+          ) : null}
+          {result.verdict.experimental_note ? (
+            <Text
+              size={FontSize.sm}
+              accessibilityRole="text"
+              className="rounded-md border border-dashed border-border bg-muted p-2 text-muted-foreground"
+            >
+              {result.verdict.experimental_note}
+            </Text>
+          ) : null}
           {result.verdict.points.map((point, index) => (
             <Text key={index} className="text-foreground">
               {point}
