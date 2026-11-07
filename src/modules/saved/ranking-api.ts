@@ -8,7 +8,7 @@ export interface RankedRecipe {
   composite: number
   bc: number | null
   kras: number | null
-  V: number | null
+  U: number | null
   G: number | null
 }
 

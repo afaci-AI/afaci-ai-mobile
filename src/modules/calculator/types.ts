@@ -95,7 +95,7 @@ export interface ComputeResult {
   quality: {
     bc: number | null
     kras: number | null
-    V: number | null
+    U: number | null
     G: number | null
   }
   amino_contributors?: string[]
@@ -147,7 +147,7 @@ export type SavedGroup = RecipeGroup
 export interface RecipeMetrics {
   bc: number | null
   kras: number | null
-  V: number | null
+  U: number | null
   G: number | null
   energy_kcal: number | null
   c_min_name: string | null
