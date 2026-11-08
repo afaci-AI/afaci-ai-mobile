@@ -15,6 +15,8 @@ export interface Subcategory extends DictionaryEntry {
 
 export interface NutrientName extends DictionaryEntry {
   nutrient_type_id: string | null
+  /** Фиксированная единица измерения нутриента; null — единица не определена. */
+  unit_id?: string | null
 }
 
 export interface Product extends DictionaryEntry {

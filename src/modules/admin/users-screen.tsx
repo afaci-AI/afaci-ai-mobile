@@ -207,7 +207,7 @@ export function AdminUsersScreen() {
               <HStack space="sm" className="justify-end">
                 <IconButton
                   size="icon"
-                  variant="ghost"
+                  variant="outline"
                   className="min-h-12 min-w-12"
                   accessibilityLabel={`Редактировать пользователя ${item.name}`}
                   isDisabled={mutation.isPending}
@@ -224,7 +224,7 @@ export function AdminUsersScreen() {
                   <>
                     <IconButton
                       size="icon"
-                      variant="ghost"
+                      variant="outline"
                       className="min-h-12 min-w-12"
                       accessibilityLabel={`${item.isActive ? 'Заблокировать' : 'Разблокировать'} пользователя ${item.name}`}
                       isDisabled={mutation.isPending}

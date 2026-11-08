@@ -1225,11 +1225,8 @@ export interface components {
              * Format: uuid
              */
             nutrient_name_id: string;
-            /**
-             * Unit Id
-             * Format: uuid
-             */
-            unit_id: string;
+            /** Unit Id */
+            unit_id?: string | null;
             /** Quantity */
             quantity: number;
             /** Error Rate */
@@ -1244,6 +1241,8 @@ export interface components {
              * Format: uuid
              */
             nutrient_type_id: string;
+            /** Unit Id */
+            unit_id?: string | null;
         };
         /** NutrientNameUpdate */
         NutrientNameUpdate: {
@@ -1251,6 +1250,8 @@ export interface components {
             name?: string | null;
             /** Nutrient Type Id */
             nutrient_type_id?: string | null;
+            /** Unit Id */
+            unit_id?: string | null;
         };
         /** NutrientUpdate */
         NutrientUpdate: {
