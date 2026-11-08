@@ -18,6 +18,10 @@ const errorMessages: Record<string, string> = {
     'Название нутриента больше недоступно. Обновите список и выберите другое.',
   'NutrientName not found': 'Название нутриента не найдено. Обновите список.',
   'Unit not found': 'Единица измерения не найдена. Обновите список.',
+  'Unit does not match nutrient name':
+    'Единица измерения нутриента задана названием и не меняется. Обновите форму и повторите.',
+  'Unit is required':
+    'Для этого нутриента не задана единица измерения. Обратитесь к администратору.',
   'Duplicate nutrient entry detected':
     'Этот нутриент уже есть в составе продукта. Измените существующую запись.',
 }
@@ -90,9 +94,9 @@ export function deleteProduct(id: string) {
   })
 }
 
+/** Единицу измерения назначает сервер по названию нутриента. */
 export interface NutrientInput {
   nutrient_name_id: string
-  unit_id: string
   quantity: number
   error_rate: number | null
 }

@@ -63,7 +63,7 @@ export function AdminProductGridCard({
         <HStack space="sm" className="justify-end border-t border-border p-2">
           <Button
             size="icon"
-            variant="ghost"
+            variant="outline"
             className="min-h-12 min-w-12"
             accessibilityLabel={`Редактировать продукт ${product.product_name}`}
             onPress={onEdit}
@@ -72,7 +72,7 @@ export function AdminProductGridCard({
           </Button>
           <Button
             size="icon"
-            variant="ghost"
+            variant="outline"
             className="min-h-12 min-w-12"
             accessibilityLabel={`Удалить продукт ${product.product_name}`}
             onPress={onDelete}

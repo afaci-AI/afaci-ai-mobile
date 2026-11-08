@@ -148,9 +148,9 @@ export default function AdminDashboardScreen() {
                 ['categories', 'Категории'],
                 ['subcategories', 'Подкатегории'],
                 ['regions', 'Регионы'],
-                ['nutrient-names', 'Названия нутриентов'],
+                ['nutrient-names', 'Нутриенты'],
                 ['nutrient-types', 'Типы нутриентов'],
-                ['units', 'Единицы измерения'],
+                ['units', 'Единицы нутриентов'],
               ].map(([kind, name]) => (
                 <Button
                   key={name}

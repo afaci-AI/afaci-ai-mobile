@@ -6,9 +6,9 @@ export const dictionaryLabels = {
   categories: 'Категории',
   subcategories: 'Подкатегории',
   regions: 'Регионы',
-  units: 'Единицы измерения',
+  'nutrient-names': 'Нутриенты',
   'nutrient-types': 'Типы нутриентов',
-  'nutrient-names': 'Названия нутриентов',
+  units: 'Единицы нутриентов',
 } as const
 export type DictionaryKind = keyof typeof dictionaryLabels
 export interface AdminDictionaryEntry {
@@ -16,11 +16,14 @@ export interface AdminDictionaryEntry {
   name: string
   category_id?: string
   nutrient_type_id?: string
+  /** Единица измерения нутриента (только для `nutrient-names`). */
+  unit_id?: string | null
 }
 export interface DictionaryInput {
   name: string
   category_id?: string
   nutrient_type_id?: string
+  unit_id?: string
 }
 export function isDictionaryKind(value: string): value is DictionaryKind {
   return Object.hasOwn(dictionaryLabels, value)
@@ -30,15 +33,19 @@ async function dictionaryRequest<T>(path: string, options?: RequestOptions) {
     return await request<T>(path, options)
   } catch (error) {
     if (error instanceof ApiError) {
-      const message = /already exists/i.test(error.message)
-        ? 'Запись с таким названием уже существует в выбранной группе.'
-        : /Cannot delete|used in/i.test(error.message)
-          ? 'Запись используется в других данных. Сначала измените связанные записи.'
-          : /not found/i.test(error.message)
-            ? 'Запись или выбранная группа больше недоступна. Обновите список.'
-            : error.status === 422
-              ? 'Проверьте название и выбранную группу.'
-              : error.message
+      const message = /Cannot change unit/i.test(error.message)
+        ? 'Единицу нельзя изменить: у этого нутриента уже есть значения в другой единице. Значения не пересчитываются.'
+        : /already exists/i.test(error.message)
+          ? 'Запись с таким названием уже существует в выбранной группе.'
+          : /Cannot delete|used in/i.test(error.message)
+            ? 'Запись используется в других данных. Сначала измените связанные записи.'
+            : /Unit is required for this nutrient type/i.test(error.message)
+              ? 'Для выбранного типа нутриента единица измерения не определена. Обратитесь к администратору.'
+              : /not found/i.test(error.message)
+                ? 'Запись или выбранная группа больше недоступна. Обновите список.'
+                : error.status === 422
+                  ? 'Проверьте название и выбранную группу.'
+                  : error.message
       throw new ApiError(message, error.status)
     }
     throw error

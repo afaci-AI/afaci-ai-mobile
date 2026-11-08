@@ -93,6 +93,12 @@ function DictionaryScreen({ kind }: { kind: DictionaryKind }) {
     queryFn: () => listDictionary(parentKind!),
     enabled: Boolean(user && parentKind),
   })
+  // Единица нутриента показывается в списке рядом с типом.
+  const units = useQuery({
+    queryKey: ['admin', 'dictionary', 'units'],
+    queryFn: () => listDictionary('units'),
+    enabled: Boolean(user && kind === 'nutrient-names'),
+  })
   const remove = async () => {
     if (!deleting || saving.current || !active()) return
     saving.current = true
@@ -174,6 +180,7 @@ function DictionaryScreen({ kind }: { kind: DictionaryKind }) {
           onRefresh={() => {
             void entries.refetch()
             if (parentKind) void parents.refetch()
+            if (kind === 'nutrient-names') void units.refetch()
           }}
           keyboardShouldPersistTaps="handled"
           ListEmptyComponent={
@@ -197,11 +204,24 @@ function DictionaryScreen({ kind }: { kind: DictionaryKind }) {
                       : 'Группа недоступна')}
                 </Text>
               ) : null}
+              {kind === 'nutrient-names' ? (
+                <Text size={FontSize.sm} className="text-muted-foreground">
+                  {`Единица: ${
+                    units.data?.find((unit) => unit.id === item.unit_id)
+                      ?.name ??
+                    (item.unit_id
+                      ? units.isError
+                        ? 'не удалось загрузить'
+                        : 'недоступна'
+                      : 'не задана')
+                  }`}
+                </Text>
+              ) : null}
               {canEdit ? (
                 <Box className="flex-row justify-end gap-2">
                   <IconButton
                     size="icon"
-                    variant="ghost"
+                    variant="outline"
                     className="min-h-12 min-w-12"
                     accessibilityLabel={`Редактировать ${item.name}`}
                     onPress={() => {
@@ -213,7 +233,7 @@ function DictionaryScreen({ kind }: { kind: DictionaryKind }) {
                   </IconButton>
                   <IconButton
                     size="icon"
-                    variant="ghost"
+                    variant="outline"
                     className="min-h-12 min-w-12"
                     accessibilityLabel={`Удалить ${item.name}`}
                     onPress={() => {
@@ -280,6 +300,7 @@ function DictionaryDialog({
   const [parentId, setParentId] = useState(
     entry?.category_id ?? entry?.nutrient_type_id ?? '',
   )
+  const [unitId, setUnitId] = useState(entry?.unit_id ?? '')
   const [error, setError] = useState('')
   const [validation, setValidation] = useState(false)
   const [pending, setPending] = useState(false)
@@ -295,10 +316,17 @@ function DictionaryDialog({
     queryFn: () => listDictionary(parentKind!),
     enabled: Boolean(parentKind),
   })
+  const needsUnit = kind === 'nutrient-names'
+  const units = useQuery({
+    queryKey: ['admin', 'dictionary', 'units'],
+    queryFn: () => listDictionary('units'),
+    enabled: needsUnit,
+  })
   const save = async () => {
     if (saving.current || !active()) return
     setValidation(true)
-    if (!name.trim() || (parentKind && !parentId)) return
+    if (!name.trim() || (parentKind && !parentId) || (needsUnit && !unitId))
+      return
     saving.current = true
     setPending(true)
     setError('')
@@ -310,7 +338,7 @@ function DictionaryDialog({
           ...(kind === 'subcategories'
             ? { category_id: parentId }
             : kind === 'nutrient-names'
-              ? { nutrient_type_id: parentId }
+              ? { nutrient_type_id: parentId, unit_id: unitId }
               : {}),
         },
         entry?.id,
@@ -402,6 +430,38 @@ function DictionaryDialog({
                 </FormField>
               )
             ) : null}
+            {needsUnit ? (
+              units.isPending ? (
+                <LoadingView fullscreen={false} />
+              ) : units.isError ? (
+                <ErrorState
+                  message={units.error.message}
+                  onRetry={() => void units.refetch()}
+                />
+              ) : (
+                <FormField
+                  label="Единица измерения"
+                  isRequired
+                  error={
+                    validation && !unitId
+                      ? 'Выберите единицу измерения.'
+                      : undefined
+                  }
+                  hint="Подставляется при добавлении значения этого нутриента к продукту."
+                >
+                  <Select
+                    options={(units.data ?? []).map((item) => ({
+                      value: item.id,
+                      label: item.name,
+                    }))}
+                    value={unitId}
+                    onChange={setUnitId}
+                    isDisabled={pending}
+                    placeholder="Выберите единицу"
+                  />
+                </FormField>
+              )
+            ) : null}
             {error ? (
               <Text accessibilityRole="alert" className="text-destructive-text">
                 {error}
@@ -420,7 +480,9 @@ function DictionaryDialog({
             <Button
               label="Сохранить"
               isLoading={pending}
-              isDisabled={Boolean(parentKind && !parents.data)}
+              isDisabled={Boolean(
+                (parentKind && !parents.data) || (needsUnit && !units.data),
+              )}
               onPress={() => void save()}
             />
           </Box>

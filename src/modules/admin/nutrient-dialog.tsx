@@ -89,7 +89,14 @@ export function NutrientDialog({
       item.name.toLocaleLowerCase('ru-RU').includes(query),
   )
   const [nameId, setNameId] = useState(nutrient?.nutrient_name_id ?? '')
-  const [unitId, setUnitId] = useState(nutrient?.unit_id ?? '')
+  // Единица измерения фиксирована за названием нутриента и меняется вместе с ним.
+  const selectedName = dictionaries.data?.names.find(
+    (item) => item.id === nameId,
+  )
+  const unitName = selectedName?.unit_id
+    ? dictionaries.data?.units.find((item) => item.id === selectedName.unit_id)
+        ?.name
+    : undefined
   const [quantity, setQuantity] = useState(String(nutrient?.quantity ?? ''))
   const [errorRate, setErrorRate] = useState(String(nutrient?.error_rate ?? ''))
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -104,7 +111,9 @@ export function NutrientDialog({
     const uncertainty = errorRate.trim() ? parseNumber(errorRate) : null
     const nextErrors: Record<string, string> = {}
     if (!nameId) nextErrors.name = 'Выберите нутриент.'
-    if (!unitId) nextErrors.unit = 'Выберите единицу измерения.'
+    else if (!unitName)
+      nextErrors.name =
+        'Для этого нутриента не задана единица измерения. Обратитесь к администратору.'
     if (amount === null) nextErrors.quantity = 'Введите неотрицательное число.'
     if (errorRate.trim() && uncertainty === null)
       nextErrors.errorRate = 'Введите неотрицательное число.'
@@ -119,7 +128,6 @@ export function NutrientDialog({
     }
     const input: NutrientInput = {
       nutrient_name_id: nameId,
-      unit_id: unitId,
       quantity: amount,
       error_rate: uncertainty,
     }
@@ -196,7 +204,7 @@ export function NutrientDialog({
               <Text className="text-muted-foreground">
                 {nutrient
                   ? 'Выберите другое название или измените существующую запись в списке.'
-                  : `Заменить существующее значение на ${quantity} ${dictionaries.data?.units.find((item) => item.id === unitId)?.name ?? ''}?`}
+                  : `Заменить существующее значение на ${quantity} ${unitName ?? ''}?`}
               </Text>
             </Box>
           ) : dictionaries.isPending ? (
@@ -240,32 +248,26 @@ export function NutrientDialog({
                 />
               </FormField>
               <FormField
-                label="Единица измерения"
-                isRequired
-                error={errors.unit}
-              >
-                <Select
-                  options={(dictionaries.data?.units ?? []).map((item) => ({
-                    value: item.id,
-                    label: item.name,
-                  }))}
-                  value={unitId}
-                  onChange={setUnitId}
-                  isDisabled={pending}
-                  placeholder="Выберите единицу"
-                />
-              </FormField>
-              <FormField
                 label="Количество на 100 г продукта"
                 isRequired
                 error={errors.quantity}
               >
                 <Input
-                  accessibilityLabel="Количество нутриента"
+                  accessibilityLabel={`Количество нутриента${unitName ? `, ${unitName}` : ''}`}
                   value={quantity}
                   onChangeText={setQuantity}
                   keyboardType="decimal-pad"
                   isDisabled={pending}
+                  rightSlot={
+                    unitName ? (
+                      <Text
+                        accessibilityLabel={`Единица измерения: ${unitName}`}
+                        className="text-muted-foreground"
+                      >
+                        {unitName}
+                      </Text>
+                    ) : null
+                  }
                 />
               </FormField>
               <FormField
@@ -279,6 +281,11 @@ export function NutrientDialog({
                   onChangeText={setErrorRate}
                   keyboardType="decimal-pad"
                   isDisabled={pending}
+                  rightSlot={
+                    unitName ? (
+                      <Text className="text-muted-foreground">{unitName}</Text>
+                    ) : null
+                  }
                 />
               </FormField>
             </Box>
