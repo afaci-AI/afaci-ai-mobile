@@ -8,6 +8,8 @@ import { Badge, Card } from '@/shared/ui/kit'
 import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
 
+import { DailyNormsCard } from '@/modules/norms'
+
 import { aminoAcidName } from '../amino-acid-names'
 import type { ComputeResult } from '../types'
 import { FontSize } from '@/shared/theme/font-sizes'
@@ -79,6 +81,9 @@ export const CalculatorResults = memo(function CalculatorResults({
             </Text>
           ))}
         </Card>
+      ) : null}
+      {result.daily_norms ? (
+        <DailyNormsCard data={result.daily_norms} subject="рецептуры" />
       ) : null}
       <Card>
         <Metric

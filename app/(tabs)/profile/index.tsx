@@ -1,6 +1,6 @@
 import Constants from 'expo-constants'
 import { useRouter } from 'expo-router'
-import { ChevronRight, LogOut, Shield } from 'lucide-react-native'
+import { BookOpen, ChevronRight, LogOut, Shield } from 'lucide-react-native'
 import { useState } from 'react'
 
 import type { UserRole } from '@/shared/api/models'
@@ -101,6 +101,23 @@ export default function ProfileScreen() {
                 </Text>
               </Box>
             </Box>
+          </Card>
+
+          <Card className="p-0">
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push('/sources')}
+              className="flex-row items-center gap-3 p-4 data-[active=true]:bg-muted"
+            >
+              <Icon as={BookOpen} className="text-foreground" />
+              <Box className="flex-1">
+                <Text className="text-card-foreground">Источники</Text>
+                <Text size={FontSize.sm} className="text-muted-foreground">
+                  Документы и ссылки, на которые опирается программа
+                </Text>
+              </Box>
+              <Icon as={ChevronRight} className="text-muted-foreground" />
+            </Pressable>
           </Card>
 
           {hasPermission(user.role, 'canEditProducts') ? (
