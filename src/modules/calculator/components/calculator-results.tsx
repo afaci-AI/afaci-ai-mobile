@@ -12,6 +12,7 @@ import { DailyNormsCard } from '@/modules/norms'
 
 import { aminoAcidName } from '../amino-acid-names'
 import type { ComputeResult } from '../types'
+import { VerdictCard } from './verdict-card'
 import { FontSize } from '@/shared/theme/font-sizes'
 
 function Metric({ label, value }: { label: string; value: string }) {
@@ -51,37 +52,7 @@ export const CalculatorResults = memo(function CalculatorResults({
           ))}
         </Card>
       ) : null}
-      {result.verdict ? (
-        <Card>
-          <Heading size={FontSize.md} className="text-foreground">
-            {result.verdict.headline}
-          </Heading>
-          {result.verdict.level === 'complete' ||
-          result.verdict.level === 'incomplete' ? (
-            <Badge
-              label={
-                result.verdict.level === 'complete'
-                  ? 'Полноценный по эталону'
-                  : 'Неполноценный по эталону'
-              }
-            />
-          ) : null}
-          {result.verdict.experimental_note ? (
-            <Text
-              size={FontSize.sm}
-              accessibilityRole="text"
-              className="rounded-md border border-dashed border-border bg-muted p-2 text-muted-foreground"
-            >
-              {result.verdict.experimental_note}
-            </Text>
-          ) : null}
-          {result.verdict.points.map((point, index) => (
-            <Text key={index} className="text-foreground">
-              {point}
-            </Text>
-          ))}
-        </Card>
-      ) : null}
+      {result.verdict ? <VerdictCard verdict={result.verdict} /> : null}
       {result.daily_norms ? (
         <DailyNormsCard data={result.daily_norms} subject="рецептуры" />
       ) : null}
