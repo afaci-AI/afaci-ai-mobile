@@ -8,6 +8,7 @@ import {
   useProduct,
   useProductNutrients,
 } from '@/modules/catalog/api'
+import { DailyNormsCard, useProductDailyNorms } from '@/modules/norms'
 import { ApiError } from '@/shared/api/client'
 import { formatNumber } from '@/shared/lib/format'
 import { Box } from '@/shared/ui/box'
@@ -35,6 +36,8 @@ export function ProductDetailScreen() {
   const product = useProduct(id ?? '')
   const nutrients = useProductNutrients(id ?? '')
   const catalog = useCatalogDictionaries()
+  // Нормы дополняют карточку: их сбой не мешает показу самого продукта.
+  const norms = useProductDailyNorms(id ?? '')
   const dictionaries = useNutrientDictionaries()
   const sections = useMemo(
     () =>
@@ -137,6 +140,9 @@ export function ProductDetailScreen() {
                 />
               </Card>
               <MacroChart values={macros} />
+              {norms.data ? (
+                <DailyNormsCard data={norms.data} subject="продукта" />
+              ) : null}
               <Heading size={FontSize.lg} className="text-foreground">
                 Нутриенты
               </Heading>

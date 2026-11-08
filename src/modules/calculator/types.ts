@@ -1,3 +1,5 @@
+import type { DailyNorms } from '@/modules/norms/types'
+
 /** Wire shapes verified against calculator.py, saved.py and compute_report. */
 export interface CalculatorRow {
   key: string
@@ -101,6 +103,8 @@ export interface ComputeResult {
   amino_contributors?: string[]
   warnings?: string[]
   verdict?: ComputeVerdict | null
+  /** Суточные нормы и доля от нормы для 100 г рецептуры; считаются на backend. */
+  daily_norms?: DailyNorms | null
 }
 
 export interface CandidateIn {
