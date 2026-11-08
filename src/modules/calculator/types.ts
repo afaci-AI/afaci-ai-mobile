@@ -67,12 +67,39 @@ export interface VerdictDeficit {
   deficit: number
 }
 
+export interface VerdictSource {
+  title: string
+  authors?: string | null
+  year?: number | null
+  location?: string | null
+  url?: string | null
+}
+
+export interface VerdictIndicator {
+  code: string
+  title: string
+  value: number
+  unit?: string | null
+  text: string
+}
+
 export interface ComputeVerdict {
-  /** complete — все скоры ≥ 100 % по выбранному эталону; incomplete — есть НАК ниже эталона. */
-  level: 'complete' | 'incomplete'
+  /**
+   * complete — все скоры ≥ 100 %; incomplete — есть НАК ниже эталона;
+   * unconfirmed — скоры не ниже эталона, но данных по НАК у части белка нет.
+   */
+  level: 'complete' | 'incomplete' | 'unconfirmed'
   headline: string
   points: string[]
-  reference?: { name: string; year?: number | null }
+  reference?: {
+    name: string
+    year?: number | null
+    source?: VerdictSource | null
+  }
+  /** Правило сравнения и его происхождение — текст от backend. */
+  criterion?: string
+  limitations?: string[]
+  explanation?: VerdictIndicator[]
   deficits?: VerdictDeficit[]
   /** Пометка «Экспериментальная функция» приходит от backend. */
   experimental_note?: string
