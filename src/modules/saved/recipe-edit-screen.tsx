@@ -1,6 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { router, useLocalSearchParams } from 'expo-router'
+import {
+  router,
+  useLocalSearchParams,
+  useNavigation,
+  usePreventRemove,
+} from 'expo-router'
 import type { RecipeGroup, SavedRecipeDetail } from '@/modules/calculator/types'
 import { useSession } from '@/shared/session/store'
 import {
@@ -9,9 +14,11 @@ import {
   FormField,
   Header,
   Input,
+  ConfirmDialog,
   LoadingView,
   ScrollScreen,
   Select,
+  UnsavedChangesDialog,
   useAppToast,
 } from '@/shared/ui/kit'
 import { Text } from '@/shared/ui/text'
@@ -75,6 +82,14 @@ function RecipeEditForm({
   const [name, setName] = useState(recipe.name)
   const [groupId, setGroupId] = useState(recipe.group_id ?? '__none__')
   const [validation, setValidation] = useState('')
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [leaveAction, setLeaveAction] = useState<unknown>(null)
+  const [leaveAfterSave, setLeaveAfterSave] = useState(false)
+  const navigation = useNavigation()
+  // Уход выполняется после перерисовки, когда перехват «Назад» уже снят.
+  const [exit, setExit] = useState<{ action: unknown } | null>(null)
+  const dirty =
+    name !== recipe.name || groupId !== (recipe.group_id ?? '__none__')
   const ownerId = useSession((s) => s.user?.id)
   const client = useQueryClient()
   const toast = useAppToast()
@@ -98,10 +113,30 @@ function RecipeEditForm({
       ])
       if (active()) {
         toast.success({ title: 'Рецептура сохранена' })
-        onBack()
+        setExit({ action: null })
       }
     },
   })
+  // Уход с экрана при несохранённых изменениях: системная кнопка, жест и «Назад».
+  usePreventRemove(dirty && !exit && !save.isPending, ({ data }) =>
+    setLeaveAction(data.action),
+  )
+  useEffect(() => {
+    if (!exit) return
+    if (exit.action && typeof exit.action === 'object' && 'type' in exit.action)
+      navigation.dispatch(exit.action as never)
+    else onBack()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exit])
+  const trySave = () => {
+    if (!name.trim()) {
+      setValidation('Укажите название рецептуры.')
+      return false
+    }
+    setValidation('')
+    setConfirmOpen(true)
+    return true
+  }
   return (
     <VStack space="lg">
       <FormField label="Название" isRequired>
@@ -133,12 +168,7 @@ function RecipeEditForm({
         label="Сохранить"
         isLoading={save.isPending}
         onPress={() => {
-          if (!name.trim()) {
-            setValidation('Укажите название рецептуры.')
-            return
-          }
-          setValidation('')
-          save.mutate()
+          trySave()
         }}
       />
       <Button
@@ -156,6 +186,38 @@ function RecipeEditForm({
         Сначала сохраните изменения названия и группы. Состав и массы
         редактируются в калькуляторе.
       </Text>
+      <ConfirmDialog
+        isOpen={confirmOpen}
+        title="Сохранить изменения в рецептуре?"
+        description={`Рецептура «${recipe.name}» будет перезаписана.`}
+        confirmLabel="Сохранить"
+        isLoading={save.isPending}
+        onClose={() => {
+          if (save.isPending) return
+          setConfirmOpen(false)
+          if (leaveAfterSave) {
+            setLeaveAfterSave(false)
+            setLeaveAction((current: unknown) => current ?? {})
+          }
+        }}
+        onConfirm={() => {
+          setConfirmOpen(false)
+          save.mutate()
+        }}
+      />
+      <UnsavedChangesDialog
+        isOpen={leaveAction !== null && !confirmOpen}
+        onSave={() => {
+          if (trySave()) setLeaveAfterSave(true)
+          else setLeaveAction(null)
+        }}
+        onDiscard={() => {
+          const action = leaveAction
+          setLeaveAction(null)
+          setExit({ action })
+        }}
+        onStay={() => setLeaveAction(null)}
+      />
     </VStack>
   )
 }

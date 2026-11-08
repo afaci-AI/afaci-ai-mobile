@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { useSession } from '@/shared/session/store'
-import { useCalculatorReport } from './report-store'
+import { useCalculatorReport, type RecipeCompare } from './report-store'
 import type { CalculatorRow, ComputeResult, SavedRecipeDetail } from './types'
 
 export type { CalculatorRow } from './types'
@@ -12,6 +12,24 @@ export const emptyRow = (): CalculatorRow => ({
   amount: '',
   price: '',
 })
+/** Сигнатура редактируемых данных рецептуры; равные сигнатуры — нет изменений. */
+export function recipeSignature(
+  rows: CalculatorRow[],
+  referenceId: string,
+  costEnabled: boolean,
+): string {
+  return JSON.stringify([
+    referenceId,
+    costEnabled,
+    rows
+      .filter((r) => r.product_id)
+      .map((r) => [
+        r.product_id,
+        Number(r.amount.replace(',', '.')),
+        costEnabled ? Number((r.price || '').replace(',', '.')) : null,
+      ]),
+  ])
+}
 export const rowKey = () => String(++sequence)
 
 /** Every input change invalidates both displayed and in-flight reports. */
@@ -22,12 +40,17 @@ export function useCalculatorState() {
   const [result, setLocalResult] = useState<ComputeResult | null>(null)
   const [editing, setEditing] = useState<Pick<
     SavedRecipeDetail,
-    'id' | 'name' | 'group_id'
+    'id' | 'name' | 'group_id' | 'metrics'
   > | null>(null)
+  /** Снимок сохранённого состава: по нему определяется «есть несохранённые изменения». */
+  const [baseline, setBaseline] = useState<string | null>(null)
   const ownerId = useSession((state) => state.user?.id ?? null)
-  const setResult = (value: ComputeResult | null) => {
+  const setResult = (
+    value: ComputeResult | null,
+    compare: RecipeCompare | null = null,
+  ) => {
     setLocalResult(value)
-    useCalculatorReport.setState({ ownerId, result: value })
+    useCalculatorReport.setState({ ownerId, result: value, compare })
   }
   const revision = useRef(0)
   const invalidate = () => {
@@ -45,6 +68,8 @@ export function useCalculatorState() {
     setResult,
     editing,
     setEditing,
+    baseline,
+    setBaseline,
     revision,
     invalidate,
     patchRow(key: string, patch: Partial<CalculatorRow>) {
