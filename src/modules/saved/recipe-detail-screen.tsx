@@ -8,7 +8,14 @@ import { formatDateTime, formatNumber, formatSom } from '@/shared/lib/format'
 import { Box } from '@/shared/ui/box'
 import { FlatList } from '@/shared/ui/flat-list'
 import { Heading } from '@/shared/ui/heading'
-import { Card, ErrorState, Header, LoadingView, Screen } from '@/shared/ui/kit'
+import {
+  Button,
+  Card,
+  ErrorState,
+  Header,
+  LoadingView,
+  Screen,
+} from '@/shared/ui/kit'
 import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
 import { savedApi } from './api'
@@ -94,6 +101,15 @@ export function RecipeDetailScreen() {
           contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 32 }}
           ListHeaderComponent={
             <VStack space="md">
+              <Button
+                label="Показать расчёт пищевой ценности"
+                onPress={() =>
+                  router.navigate({
+                    pathname: '/(tabs)/calculator',
+                    params: { edit: recipe.id, calc: '1' },
+                  })
+                }
+              />
               <RecipeQualityChart recipe={recipe} />
               <Text className="text-muted-foreground">
                 Группа:{' '}

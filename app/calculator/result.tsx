@@ -1,6 +1,9 @@
 import { useRouter } from 'expo-router'
 import { CalculatorResults } from '@/modules/calculator/components/calculator-results'
-import { useCalculatorReport } from '@/modules/calculator/report-store'
+import {
+  metricDifferences,
+  useCalculatorReport,
+} from '@/modules/calculator/report-store'
 import { useSession } from '@/shared/session/store'
 import { Text } from '@/shared/ui/text'
 import { Button, EmptyState, Header, ScrollScreen } from '@/shared/ui/kit'
@@ -10,7 +13,11 @@ export default function CalculatorResultScreen() {
   const router = useRouter()
   const user = useSession((s) => s.user)
   const status = useSession((s) => s.status)
-  const { ownerId, result } = useCalculatorReport()
+  const { ownerId, result, compare } = useCalculatorReport()
+  const differences =
+    ownerId === user?.id && result && compare
+      ? metricDifferences(result, compare.metrics)
+      : []
   const back = () => {
     if (router.canGoBack()) router.back()
     else router.replace('/calculator')
@@ -25,6 +32,13 @@ export default function CalculatorResultScreen() {
         <Text className="text-destructive-text">
           Сервер округлил массы. Перед повторным расчётом и сохранением готовой
           рецептуры скорректируйте сумму до 100 г.
+        </Text>
+      ) : null}
+      {differences.length ? (
+        <Text className="text-foreground">
+          Значения пересчитаны по текущим данным продуктов и отличаются от
+          сохранённых в рецептуре «{compare?.name}»: {differences.join(', ')}.
+          Сохранённые показатели не изменены.
         </Text>
       ) : null}
       {ownerId === user?.id && result ? (
