@@ -1,0 +1,27 @@
+name: base-ci-mobile
+
+on:
+  pull_request:
+    branches: ['develop']
+
+permissions:
+  contents: read
+
+jobs:
+  mobile-analysis:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: '.node-version'
+          cache: 'npm'
+          cache-dependency-path: './package-lock.json'
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
