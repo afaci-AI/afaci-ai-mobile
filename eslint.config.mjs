@@ -2,23 +2,29 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 import expoConfig from 'eslint-config-expo/flat.js'
 
 // Границы слоёв (см. docs/architecture-god-files-solid.md и AGENTS.md):
-//   app -> modules -> shared. Роуты не обращаются к API напрямую,
+//   app -> features -> shared. Роуты не обращаются к API напрямую,
 //   shared не знает о модулях, модуль не лезет во внутренности другого.
 function restrict(...patterns) {
   return ['error', { patterns }]
 }
 
+const deepFeature = {
+  group: ['@/features/*/*'],
+  message:
+    'Импортируйте фичу целиком (@/features/<имя>): внутренности закрыты.',
+}
 const noApi = {
-  group: ['@/shared/api', '@/shared/api/*', '@/modules/*/api'],
-  message: 'Роуты app/ не обращаются к API: используйте экран или hook модуля.',
+  group: ['@/shared/api', '@/shared/api/*'],
+  message:
+    'Роуты app/ не обращаются к API: используйте экран из @/features/<имя>.',
 }
 const sharedIsLow = {
-  group: ['@/modules/*', '@/app/*'],
+  group: ['@/features/*', '@/app/*'],
   message: 'shared/ не зависит от модулей и app/.',
 }
 function crossModule(self) {
   return {
-    group: ['@/modules/*/**', '!@/modules/' + self + '/**'],
+    group: ['@/features/*/**', '!@/features/' + self + '/**'],
     message:
       'Не импортируйте внутренности другого модуля: только его index.ts.',
   }
@@ -53,13 +59,16 @@ export default defineConfig([
       ],
     },
   },
-  { files: ['app/**'], rules: { 'no-restricted-imports': restrict(noApi) } },
+  {
+    files: ['app/**'],
+    rules: { 'no-restricted-imports': restrict(noApi, deepFeature) },
+  },
   {
     files: ['src/shared/**'],
     rules: { 'no-restricted-imports': restrict(sharedIsLow) },
   },
   {
-    files: ['src/modules/admin/**'],
+    files: ['src/features/admin/**'],
     rules: {
       'no-restricted-imports': restrict(crossModule('admin'), {
         group: ['@/app/*'],
@@ -68,7 +77,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['src/modules/calculator/**'],
+    files: ['src/features/calculator/**'],
     rules: {
       'no-restricted-imports': restrict(crossModule('calculator'), {
         group: ['@/app/*'],
@@ -77,7 +86,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['src/modules/catalog/**'],
+    files: ['src/features/catalog/**'],
     rules: {
       'no-restricted-imports': restrict(crossModule('catalog'), {
         group: ['@/app/*'],
@@ -86,7 +95,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['src/modules/home/**'],
+    files: ['src/features/home/**'],
     rules: {
       'no-restricted-imports': restrict(crossModule('home'), {
         group: ['@/app/*'],
@@ -95,7 +104,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['src/modules/norms/**'],
+    files: ['src/features/norms/**'],
     rules: {
       'no-restricted-imports': restrict(crossModule('norms'), {
         group: ['@/app/*'],
@@ -104,7 +113,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['src/modules/products/**'],
+    files: ['src/features/products/**'],
     rules: {
       'no-restricted-imports': restrict(crossModule('products'), {
         group: ['@/app/*'],
@@ -113,7 +122,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['src/modules/saved/**'],
+    files: ['src/features/saved/**'],
     rules: {
       'no-restricted-imports': restrict(crossModule('saved'), {
         group: ['@/app/*'],
@@ -134,31 +143,40 @@ export default defineConfig([
       ],
       'max-lines-per-function': [
         'error',
-        { max: 200, skipBlankLines: true, skipComments: true },
+        { max: 250, skipBlankLines: true, skipComments: true },
       ],
       complexity: ['error', 15],
     },
   },
   {
     files: [
-      'app/(tabs)/database/index.tsx',
-      'src/modules/admin/product-form-screen.tsx',
-      'src/modules/calculator/components/optimize-cost-dialog.tsx',
-      'src/modules/calculator/components/reference-info-dialog.tsx',
-      'src/modules/calculator/components/save-recipe-dialog.tsx',
-      'src/modules/calculator/components/verdict-card.tsx',
-      'src/modules/products/product-detail-screen.tsx',
-      'src/modules/saved/recipe-detail-screen.tsx',
+      'src/features/admin/dictionaries-screen.tsx',
+      'src/features/admin/dictionary-dialog.tsx',
+      'src/features/admin/product-form-screen.tsx',
+      'src/features/admin/products-screen.tsx',
+      'src/features/admin/user-form-screen.tsx',
+      'src/features/admin/users-screen.tsx',
+      'src/features/calculator/components/optimize-cost-dialog.tsx',
+      'src/features/calculator/components/reference-info-dialog.tsx',
+      'src/features/calculator/components/save-recipe-dialog.tsx',
+      'src/features/calculator/components/verdict-card.tsx',
+      'src/features/catalog/database-screen.tsx',
+      'src/features/products/product-detail-screen.tsx',
+      'src/features/saved/recipe-detail-screen.tsx',
+      'src/features/saved/saved-screen.tsx',
       'src/shared/api/client.ts',
       'src/shared/api/models.ts',
     ],
     rules: { complexity: 'off' },
   },
   {
+    files: ['src/features/admin/nutrient-dialog.tsx'],
+    rules: { complexity: 'off', 'max-lines-per-function': 'off' },
+  },
+  {
     files: [
-      'src/modules/admin/dictionaries-screen.tsx',
-      'src/modules/admin/product-detail-screen.tsx',
-      'src/modules/calculator/calculator-screen.tsx',
+      'src/features/admin/product-detail-screen.tsx',
+      'src/features/calculator/calculator-screen.tsx',
     ],
     rules: {
       complexity: 'off',
@@ -167,60 +185,12 @@ export default defineConfig([
     },
   },
   {
-    files: [
-      'src/modules/admin/nutrient-dialog.tsx',
-      'src/modules/admin/products-screen.tsx',
-      'src/modules/admin/user-form-screen.tsx',
-      'src/modules/admin/users-screen.tsx',
-      'src/modules/saved/saved-screen.tsx',
-    ],
-    rules: { complexity: 'off', 'max-lines-per-function': 'off' },
-  },
-  {
-    files: ['src/modules/saved/ranking-panel.tsx'],
+    files: ['src/features/saved/ranking-panel.tsx'],
     rules: { 'max-lines': 'off', 'max-lines-per-function': 'off' },
   },
   {
-    // Baseline границ: роуты, которые пока обращаются к API напрямую.
-    files: [
-      'app/(tabs)/database/filters.tsx',
-      'app/(tabs)/database/index.tsx',
-      'app/(tabs)/profile/index.tsx',
-      'app/_layout.tsx',
-      'app/admin/products/filters.tsx',
-    ],
-    rules: { 'no-restricted-imports': restrict() },
-  },
-  {
-    // Baseline границ: импорты внутренностей других модулей (станут
-    // импортами через index.ts на этапе 11 плана).
-    files: [
-      'src/modules/admin/admin-product-grid-card.tsx',
-      'src/modules/admin/api.ts',
-      'src/modules/admin/dashboard-screen.tsx',
-      'src/modules/admin/nutrient-dialog.tsx',
-      'src/modules/admin/nutrient-toolbar.tsx',
-      'src/modules/admin/product-detail-screen.tsx',
-      'src/modules/admin/product-form-screen.tsx',
-      'src/modules/admin/products-screen.tsx',
-      'src/modules/calculator/api.ts',
-      'src/modules/calculator/components/product-search-modal.tsx',
-      'src/modules/calculator/types.ts',
-      'src/modules/products/nutrients.ts',
-      'src/modules/products/product-detail-screen.tsx',
-      'src/modules/saved/api.ts',
-      'src/modules/saved/ranking-panel.tsx',
-      'src/modules/saved/ranking-screen.tsx',
-      'src/modules/saved/recipe-edit-screen.tsx',
-      'src/modules/saved/recipe-metrics.tsx',
-      'src/modules/saved/recipe-quality-chart.tsx',
-      'src/modules/saved/saved-screen.tsx',
-    ],
-    rules: {
-      'no-restricted-imports': restrict({
-        group: ['@/app/*'],
-        message: 'Модули не импортируют app/.',
-      }),
-    },
+    // Корневой layout подключает провайдер запросов (композиция приложения).
+    files: ['app/_layout.tsx'],
+    rules: { 'no-restricted-imports': 'off' },
   },
 ])

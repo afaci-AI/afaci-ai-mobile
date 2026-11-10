@@ -1,1 +1,1 @@
-export { default } from '@/modules/admin/dictionaries-screen'
+export { DictionariesScreen as default } from '@/features/admin'

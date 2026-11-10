@@ -1,1 +1,1 @@
-export { default } from '@/modules/admin/product-nutrients-screen'
+export { ProductNutrientsScreen as default } from '@/features/admin'
