@@ -1,1 +1,1 @@
-export { RankingScreen as default } from '@/modules/saved/ranking-screen'
+export { RankingScreen as default } from '@/features/saved'

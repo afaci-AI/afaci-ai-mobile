@@ -1,4 +1,4 @@
-import { AdminUserFormScreen } from '@/modules/admin/user-form-screen'
+import { AdminUserFormScreen } from '@/features/admin'
 export default function EditUser() {
   return <AdminUserFormScreen edit />
 }

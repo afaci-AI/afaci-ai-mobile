@@ -10,10 +10,7 @@ export default function AdminLayout() {
   // Гостя уводит AuthRedirect; пока пользователя нет, не рендерим содержимое.
   if (!user) return null
 
-  if (
-    user.role !== 'admin' &&
-    /^\/admin\/users(\/|$)/.test(pathname)
-  ) {
+  if (user.role !== 'admin' && /^\/admin\/users(\/|$)/.test(pathname)) {
     return <Redirect href="/admin" />
   }
 
