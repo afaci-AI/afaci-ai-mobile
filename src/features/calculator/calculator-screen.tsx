@@ -364,7 +364,7 @@ export function CalculatorScreen() {
         )
       toast.success({
         title: 'Стоимость оптимизирована',
-        description: `${formatSom(result.total_cost_per_100g)} / 100 г`,
+        description: `${formatSom(result.total_cost_per_kg)} / кг`,
       })
     } catch (e) {
       if (active() && revision === s.revision.current)
