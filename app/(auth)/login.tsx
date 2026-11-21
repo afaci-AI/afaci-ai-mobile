@@ -162,6 +162,16 @@ export default function LoginScreen() {
                 />
               </FormField>
 
+              <Pressable
+                accessibilityRole="link"
+                onPress={() => router.push('/forgot-password')}
+                className="self-end py-1"
+              >
+                <Text size={FontSize.sm} className="text-muted-foreground">
+                  Забыли пароль?
+                </Text>
+              </Pressable>
+
               {serverError ? (
                 <Box className="rounded-md border border-destructive/40 bg-destructive/10 p-3">
                   <Text size={FontSize.sm} className="text-destructive-text">
