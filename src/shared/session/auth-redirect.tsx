@@ -13,8 +13,13 @@ import { useSession } from './store'
  * Единая точка редиректов: гость не остаётся на защищённых экранах,
  * авторизованный не остаётся на экране входа и уходит на `next` из ссылки.
  */
+export const CHANGE_PASSWORD_ROUTE = '/change-password'
+
 export function AuthRedirect() {
   const status = useSession((state) => state.status)
+  const mustChangePassword = useSession(
+    (state) => state.user?.mustChangePassword ?? false,
+  )
   const segments = useSegments()
   const pathname = usePathname()
   const params = useGlobalSearchParams<{ next?: string }>()
@@ -33,10 +38,17 @@ export function AuthRedirect() {
       return
     }
 
+    // Временный пароль: до смены доступен только экран смены пароля.
+    if (status === 'authenticated' && mustChangePassword) {
+      if (pathname !== CHANGE_PASSWORD_ROUTE)
+        router.replace(CHANGE_PASSWORD_ROUTE)
+      return
+    }
+
     if (status === 'authenticated' && isAuthRoute) {
       router.replace(resolveNextRoute(params.next))
     }
-  }, [status, segments, pathname, params.next, router])
+  }, [status, mustChangePassword, segments, pathname, params.next, router])
 
   return null
 }

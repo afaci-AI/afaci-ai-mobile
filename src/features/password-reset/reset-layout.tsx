@@ -12,12 +12,14 @@ import { FontSize } from '@/shared/theme/font-sizes'
 
 /** Общий каркас экранов восстановления: шапка, иконка, заголовок, карточка. */
 export function ResetLayout({
+  header = 'Восстановление пароля',
   icon,
   title,
   subtitle,
   onBack,
   children,
 }: {
+  header?: string
   icon: LucideIcon
   title: string
   subtitle: ReactNode
@@ -27,7 +29,7 @@ export function ResetLayout({
   return (
     <KeyboardAvoidingView className="flex-1" behavior="padding">
       <Screen>
-        <Header title="Восстановление пароля" onBack={onBack} />
+        <Header title={header} onBack={onBack} />
         <ScrollView
           className="flex-1"
           contentContainerClassName="grow justify-center p-4"

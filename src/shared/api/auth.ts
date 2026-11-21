@@ -22,6 +22,13 @@ export const authApi = {
     return normalizeUser(await request<User>('/auth/me'))
   },
 
+  changePassword(data: { current_password: string; new_password: string }) {
+    return request<{ status: string }>('/auth/change-password', {
+      method: 'POST',
+      body: data,
+    })
+  },
+
   /** Ответ одинаков для известного и неизвестного адреса. */
   requestPasswordReset(email: string) {
     return request<{ status: string; message: string; resend_after?: number }>(
