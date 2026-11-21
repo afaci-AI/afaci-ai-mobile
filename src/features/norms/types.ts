@@ -27,6 +27,8 @@ export interface DailyNormRow {
   basis?: string | null
   /** Значение есть не у всех ингредиентов рецептуры: сумма неполная. */
   partial?: boolean
+  /** norm — физиологическая норма; adequate — адекватный уровень потребления. */
+  kind?: 'norm' | 'adequate' | null
 }
 
 export interface DailyNormsInfo {

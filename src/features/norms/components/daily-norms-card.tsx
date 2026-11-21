@@ -80,7 +80,9 @@ function MicroCard({
           Микросостав
         </Heading>
         <Text size={FontSize.sm} className="text-muted-foreground">
-          Минеральный состав: содержание в 100 г {subject}
+          Минеральный состав: содержание в 100 г {subject} и доля от усреднённой
+          суточной нормы; для кобальта и ванадия — от адекватного уровня
+          потребления
         </Text>
       </Box>
       {rows.map((row) => (

@@ -67,21 +67,26 @@ export function NormsInfoDialog({
               <Heading size={FontSize.sm} className="text-foreground">
                 Как получена каждая норма
               </Heading>
-              {data.norms.map((row) => (
-                <Text
-                  key={row.key}
-                  size={FontSize.sm}
-                  className="text-foreground"
-                >
-                  {row.name}
-                  {row.basis ? (
-                    <Text size={FontSize.sm} className="text-muted-foreground">
-                      {' '}
-                      — {row.basis}
-                    </Text>
-                  ) : null}
-                </Text>
-              ))}
+              {[...data.macro, ...data.micro.filter((row) => row.basis)].map(
+                (row) => (
+                  <Text
+                    key={row.key}
+                    size={FontSize.sm}
+                    className="text-foreground"
+                  >
+                    {row.name}
+                    {row.basis ? (
+                      <Text
+                        size={FontSize.sm}
+                        className="text-muted-foreground"
+                      >
+                        {' '}
+                        — {row.basis}
+                      </Text>
+                    ) : null}
+                  </Text>
+                ),
+              )}
             </VStack>
             {data.sources.length ? (
               <VStack space="sm">

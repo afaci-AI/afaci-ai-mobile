@@ -34,7 +34,9 @@ export function NormRow({ row }: { row: DailyNormRow }) {
       className="gap-1 border-b border-border py-2"
       accessible
       accessibilityLabel={`${row.name}: ${amountText(row)}${
-        norm ? `, норма ${norm}` : ', нормы нет'
+        norm
+          ? `, ${row.kind === 'adequate' ? 'адекватный уровень' : 'норма'} ${norm}`
+          : ', нормы нет'
       }${percent ? `, доля от нормы ${percent}` : ''}${
         row.partial ? ', данные неполные' : ''
       }`}
@@ -50,6 +52,7 @@ export function NormRow({ row }: { row: DailyNormRow }) {
       {norm ? (
         <Text size={FontSize.sm} className="text-muted-foreground">
           {amountText(row)} из {norm} в сутки
+          {row.kind === 'adequate' ? ' · адекватный уровень' : ''}
         </Text>
       ) : null}
     </Box>
