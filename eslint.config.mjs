@@ -68,6 +68,15 @@ export default defineConfig([
     rules: { 'no-restricted-imports': restrict(sharedIsLow) },
   },
   {
+    files: ['src/features/app-update/**'],
+    rules: {
+      'no-restricted-imports': restrict(crossModule('app-update'), {
+        group: ['@/app/*'],
+        message: 'Модули не импортируют app/.',
+      }),
+    },
+  },
+  {
     files: ['src/features/admin/**'],
     rules: {
       'no-restricted-imports': restrict(crossModule('admin'), {
