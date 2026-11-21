@@ -21,4 +21,40 @@ export const authApi = {
   async me(): Promise<User> {
     return normalizeUser(await request<User>('/auth/me'))
   },
+
+  changePassword(data: { current_password: string; new_password: string }) {
+    return request<{ status: string }>('/auth/change-password', {
+      method: 'POST',
+      body: data,
+    })
+  },
+
+  /** Ответ одинаков для известного и неизвестного адреса. */
+  requestPasswordReset(email: string) {
+    return request<{ status: string; message: string; resend_after?: number }>(
+      '/auth/password-reset/request',
+      { method: 'POST', authenticated: false, body: { email } },
+    )
+  },
+
+  /** Проверка кода перед вводом пароля; код при этом не расходуется. */
+  verifyPasswordReset(data: { email: string; code: string }) {
+    return request<{ status: string }>('/auth/password-reset/verify', {
+      method: 'POST',
+      authenticated: false,
+      body: data,
+    })
+  },
+
+  confirmPasswordReset(data: {
+    email: string
+    code: string
+    new_password: string
+  }) {
+    return request<{ status: string }>('/auth/password-reset/confirm', {
+      method: 'POST',
+      authenticated: false,
+      body: data,
+    })
+  },
 }

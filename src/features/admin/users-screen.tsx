@@ -4,6 +4,7 @@ import { router } from 'expo-router'
 import {
   Lock,
   LockOpen,
+  Mail,
   Pencil,
   Search,
   SlidersHorizontal,
@@ -37,6 +38,7 @@ import {
   changeUserState,
   getUserStatus,
   listUsers,
+  resendCredentials,
   userRoles,
   userStatuses,
 } from './users-api'
@@ -61,7 +63,7 @@ export function AdminUsersScreen() {
   const activeFilterCount = [role, status].filter(Boolean).length
   const [action, setAction] = useState<{
     user: User
-    type: 'block' | 'unblock'
+    type: 'block' | 'unblock' | 'resend'
   } | null>(null)
   const client = useQueryClient()
   const toast = useAppToast()
@@ -74,7 +76,9 @@ export function AdminUsersScreen() {
     mutationFn: async () => {
       assertUserAdmin(sessionOwner)
       if (!action) throw new Error('Выберите пользователя.')
-      return changeUserState(action.user, action.type)
+      return action.type === 'resend'
+        ? resendCredentials(action.user)
+        : changeUserState(action.user, action.type)
     },
     onSuccess: async () => {
       if (useSession.getState().user?.id !== owner?.id) return
@@ -84,8 +88,13 @@ export function AdminUsersScreen() {
         useSession.getState().user?.role !== 'admin'
       )
         return
+      toast.success({
+        title:
+          action?.type === 'resend'
+            ? 'Новый временный пароль отправлен'
+            : 'Изменения сохранены',
+      })
       setAction(null)
-      toast.success({ title: 'Изменения сохранены' })
     },
   })
   const back = () =>
@@ -220,6 +229,21 @@ export function AdminUsersScreen() {
                 >
                   <ButtonIcon as={Pencil} />
                 </IconButton>
+                {item.mustChangePassword && item.isActive ? (
+                  <IconButton
+                    size="icon"
+                    variant="outline"
+                    className="min-h-12 min-w-12"
+                    accessibilityLabel={`Выслать новый временный пароль пользователю ${item.name}`}
+                    isDisabled={mutation.isPending}
+                    onPress={() => {
+                      mutation.reset()
+                      setAction({ user: item, type: 'resend' })
+                    }}
+                  >
+                    <ButtonIcon as={Mail} />
+                  </IconButton>
+                ) : null}
                 {item.id !== owner.id ? (
                   <>
                     <IconButton
@@ -248,20 +272,24 @@ export function AdminUsersScreen() {
       <ConfirmDialog
         isOpen={Boolean(action)}
         title={
-          action?.type === 'block'
-            ? 'Заблокировать пользователя?'
-            : 'Разблокировать пользователя?'
+          action?.type === 'resend'
+            ? 'Выслать новый временный пароль?'
+            : action?.type === 'block'
+              ? 'Заблокировать пользователя?'
+              : 'Разблокировать пользователя?'
         }
         description={[
           action?.user.email,
           action?.type === 'block'
             ? 'Вход будет отключён. Рецептуры и группы сохранятся.'
-            : '',
+            : action?.type === 'resend'
+              ? 'Пароль из прежнего письма перестанет действовать.'
+              : '',
           mutation.error ? message(mutation.error) : '',
         ]
           .filter(Boolean)
           .join('\n')}
-        isDestructive={action?.type !== 'unblock'}
+        isDestructive={action?.type === 'block'}
         confirmLabel="Подтвердить"
         isLoading={mutation.isPending}
         onConfirm={() => mutation.mutate()}

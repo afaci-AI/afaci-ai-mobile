@@ -47,18 +47,29 @@ export interface UserInput {
   access_expires_at: string | null
   access_expires_at_unlimited?: boolean
   email?: string
-  password?: string
-  must_change_password?: boolean
 }
+/** Результат письма с логином и временным паролем — отдельно от создания. */
+export interface CredentialsEmail {
+  sent: boolean
+  error: string | null
+}
+type UserWithEmail = User & { credentialsEmail?: CredentialsEmail }
 export async function saveUser(id: string | undefined, body: UserInput) {
   assertUserAdmin()
   if (id === useSession.getState().user?.id && body.role !== 'admin')
     throw new Error('Нельзя понизить роль собственной учётной записи.')
-  return normalizeUser(
-    await request<User>(id ? `/users/${encodeURIComponent(id)}` : '/users', {
-      method: id ? 'PATCH' : 'POST',
-      body,
-    }),
+  const raw = await request<UserWithEmail>(
+    id ? `/users/${encodeURIComponent(id)}` : '/users',
+    { method: id ? 'PATCH' : 'POST', body },
+  )
+  return { user: normalizeUser(raw), credentialsEmail: raw.credentialsEmail }
+}
+/** Новый временный пароль письмом; прежний перестаёт действовать. */
+export async function resendCredentials(user: User) {
+  assertUserAdmin()
+  return request<UserWithEmail>(
+    `/users/${encodeURIComponent(user.id)}/resend-credentials`,
+    { method: 'POST' },
   )
 }
 export async function changeUserState(user: User, action: 'block' | 'unblock') {
