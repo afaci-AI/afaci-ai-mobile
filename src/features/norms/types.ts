@@ -15,15 +15,18 @@ export interface Source {
 export interface DailyNormRow {
   key: string
   name: string
-  unit: string
-  /** Усреднённая суточная норма. */
-  norm: number
+  /** Единица на 100 г: «г», «мг», «ккал», «%». */
+  unit: string | null
+  /** Усреднённая суточная норма; null — нормы для нутриента нет. */
+  norm: number | null
   /** Содержание на 100 г; null — данных нет. */
   amount: number | null
   /** Доля от нормы, %; считается на backend. */
   percent: number | null
   source_id?: string | null
   basis?: string | null
+  /** Значение есть не у всех ингредиентов рецептуры: сумма неполная. */
+  partial?: boolean
 }
 
 export interface DailyNormsInfo {
@@ -33,7 +36,14 @@ export interface DailyNormsInfo {
 }
 
 export interface DailyNorms {
+  /** Макросостав. */
+  macro: DailyNormRow[]
+  /** @deprecated прежнее имя списка `macro`. */
   norms: DailyNormRow[]
+  /** Микросостав (минералы); пустой, если данных нет. */
+  micro: DailyNormRow[]
+  /** Прочее: влага, зольность и т. п. */
+  other: DailyNormRow[]
   sources: Source[]
   info: DailyNormsInfo
 }
