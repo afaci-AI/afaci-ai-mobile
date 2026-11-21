@@ -15,6 +15,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 import '@/global.css'
+import { AppUpdateGate } from '@/features/app-update'
 import { queryClient } from '@/shared/api/query-client'
 import { AuthRedirect } from '@/shared/session/auth-redirect'
 import { useSession } from '@/shared/session/store'
@@ -70,10 +71,10 @@ export default function RootLayout() {
                 />
               </Screen>
             ) : isReady ? (
-              <>
+              <AppUpdateGate>
                 <AuthRedirect />
                 <Stack screenOptions={{ headerShown: false }} />
-              </>
+              </AppUpdateGate>
             ) : (
               <LoadingView label="Проверка сессии…" />
             )}
