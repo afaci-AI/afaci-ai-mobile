@@ -4,14 +4,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: 'AFACI',
   slug: 'afaci',
-  version: '2.0.0',
+  version: '2.1.0',
   orientation: 'portrait',
   scheme: 'afaci',
   icon: './assets/images/icon.png',
   userInterfaceStyle: 'automatic',
   android: {
     package: 'kg.afaci.afaci_mobile',
-    versionCode: 2,
+    versionCode: 16,
     adaptiveIcon: {
       backgroundColor: '#ffffff',
       foregroundImage: './assets/images/android-icon-foreground.png',
