@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { Box } from '@/shared/ui/box'
 import { Icon } from '@/shared/ui/icon'
 import { Text } from '@/shared/ui/text'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 interface EmptyStateProps {
   title: string
@@ -23,7 +24,7 @@ export function EmptyState({
       <Icon as={icon} size="xl" className="text-muted-foreground" />
       <Text className="text-center text-foreground">{title}</Text>
       {description ? (
-        <Text size="sm" className="text-center text-muted-foreground">
+        <Text size={FontSize.sm} className="text-center text-muted-foreground">
           {description}
         </Text>
       ) : null}

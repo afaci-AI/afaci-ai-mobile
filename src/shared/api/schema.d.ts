@@ -713,7 +713,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/auth/register": {
+    "/api/v1/calculator/optimize-recipe": {
         parameters: {
             query?: never;
             header?: never;
@@ -722,8 +722,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Регистрация пользователя */
-        post: operations["register_api_v1_auth_register_post"];
+        /** Оптимизировать рецептуру относительно исходного состава */
+        post: operations["optimize_recipe_endpoint_api_v1_calculator_optimize_recipe_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -863,7 +863,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Ранжирование рецептур по БЦ, КРАС, V, G */
+        /** Ранжирование рецептур по БЦ, КРАС, U, G */
         post: operations["ranking_api_v1_saved_ranking_post"];
         delete?: never;
         options?: never;
@@ -906,23 +906,6 @@ export interface paths {
         head?: never;
         /** Редактировать пользователя */
         patch: operations["update_user_api_v1_users__id__patch"];
-        trace?: never;
-    };
-    "/api/v1/users/{id}/permanent": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Удалить пользователя безвозвратно вместе с рецептурами */
-        delete: operations["delete_user_permanently_api_v1_users__id__permanent_delete"];
-        options?: never;
-        head?: never;
-        patch?: never;
         trace?: never;
     };
     "/api/v1/demo/ping": {
@@ -1056,7 +1039,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Загрузить APK файл */
+        /** Загрузить APK и опубликовать версию */
         post: operations["upload_apk_api_v1_admin_app_versions_upload_apk_post"];
         delete?: never;
         options?: never;
@@ -1074,8 +1057,7 @@ export interface paths {
         /** Список всех версий */
         get: operations["list_app_versions_api_v1_admin_app_versions_get"];
         put?: never;
-        /** Создать версию */
-        post: operations["create_app_version_api_v1_admin_app_versions_post"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1121,33 +1103,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** AppVersionCreate */
-        AppVersionCreate: {
-            /** Version */
-            version: string;
-            /** Versioncode */
-            versionCode: number;
-            /** Apkfilename */
-            apkFilename: string;
-            /** Changelog */
-            changelog?: string | null;
-            /**
-             * Forceupdate
-             * @default false
-             */
-            forceUpdate: boolean;
-            /** Minsupportedversioncode */
-            minSupportedVersionCode?: number | null;
-            /**
-             * Iscurrent
-             * @default true
-             */
-            isCurrent: boolean;
-        };
         /** AppVersionUpdate */
         AppVersionUpdate: {
-            /** Version */
-            version?: string | null;
             /** Changelog */
             changelog?: string | null;
             /** Forceupdate */
@@ -1159,6 +1116,15 @@ export interface components {
         Body_upload_apk_api_v1_admin_app_versions_upload_apk_post: {
             /** File */
             file: string;
+            /**
+             * Forceupdate
+             * @default false
+             */
+            forceUpdate: boolean;
+            /** Changelog */
+            changelog?: string | null;
+            /** Minsupportedversioncode */
+            minSupportedVersionCode?: number | null;
         };
         /** CalcItem */
         CalcItem: {
@@ -1259,15 +1225,33 @@ export interface components {
              * Format: uuid
              */
             nutrient_name_id: string;
-            /**
-             * Unit Id
-             * Format: uuid
-             */
-            unit_id: string;
+            /** Unit Id */
+            unit_id?: string | null;
             /** Quantity */
             quantity: number;
             /** Error Rate */
             error_rate?: number | null;
+        };
+        /** NutrientNameCreate */
+        NutrientNameCreate: {
+            /** Name */
+            name: string;
+            /**
+             * Nutrient Type Id
+             * Format: uuid
+             */
+            nutrient_type_id: string;
+            /** Unit Id */
+            unit_id?: string | null;
+        };
+        /** NutrientNameUpdate */
+        NutrientNameUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Nutrient Type Id */
+            nutrient_type_id?: string | null;
+            /** Unit Id */
+            unit_id?: string | null;
         };
         /** NutrientUpdate */
         NutrientUpdate: {
@@ -1289,6 +1273,28 @@ export interface components {
             /** Kras Max */
             kras_max?: number | null;
         };
+        /** OptimizationItemIn */
+        OptimizationItemIn: {
+            /**
+             * Product Id
+             * Format: uuid
+             */
+            product_id: string;
+            /** Amount G */
+            amount_g: number;
+            /** Price Per Kg */
+            price_per_kg?: number | null;
+            /**
+             * Min Amount G
+             * @default 0
+             */
+            min_amount_g: number;
+            /**
+             * Max Amount G
+             * @default 100
+             */
+            max_amount_g: number;
+        };
         /** OptimizeCostRequest */
         OptimizeCostRequest: {
             /**
@@ -1300,6 +1306,21 @@ export interface components {
             candidates: components["schemas"]["CandidateIn"][];
             /** @default {} */
             constraints: components["schemas"]["OptConstraints"];
+        };
+        /** OptimizeRecipeRequest */
+        OptimizeRecipeRequest: {
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "basic" | "cost";
+            /**
+             * Reference Protein Id
+             * Format: uuid
+             */
+            reference_protein_id: string;
+            /** Items */
+            items: components["schemas"]["OptimizationItemIn"][];
         };
         /** ProductAutoCreate */
         ProductAutoCreate: {
@@ -1345,15 +1366,6 @@ export interface components {
             /** Recipe Ids */
             recipe_ids: string[];
             weights?: components["schemas"]["Weights"] | null;
-        };
-        /** RegisterRequest */
-        RegisterRequest: {
-            /** Email */
-            email: string;
-            /** Name */
-            name: string;
-            /** Password */
-            password: string;
         };
         /** SavedItemIn */
         SavedItemIn: {
@@ -1416,6 +1428,23 @@ export interface components {
             /** Name */
             name?: string | null;
         };
+        /** SubcategoryCreate */
+        SubcategoryCreate: {
+            /** Name */
+            name: string;
+            /**
+             * Category Id
+             * Format: uuid
+             */
+            category_id: string;
+        };
+        /** SubcategoryUpdate */
+        SubcategoryUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Category Id */
+            category_id?: string | null;
+        };
         /** UserCreateRequest */
         UserCreateRequest: {
             /** Email */
@@ -1476,10 +1505,15 @@ export interface components {
              */
             kras: number;
             /**
-             * V
-             * @default 0.25
+             * U
+             * @description Коэффициент утилитарности; прежнее имя v принимается как устаревшее.
              */
-            v: number;
+            u?: number | null;
+            /**
+             * V
+             * @deprecated Используйте u.
+             */
+            v?: number | null;
             /**
              * G
              * @default 0.25
@@ -1825,7 +1859,9 @@ export interface operations {
     api_create_category_api_v1_categories_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -1889,7 +1925,9 @@ export interface operations {
     api_delete_category_api_v1_categories__id__delete: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 id: string;
             };
@@ -1920,7 +1958,9 @@ export interface operations {
     api_update_category_api_v1_categories__id__patch: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 id: string;
             };
@@ -1955,7 +1995,9 @@ export interface operations {
     api_bulk_categories_api_v1_categories_bulk_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2008,13 +2050,15 @@ export interface operations {
     api_create_subcategory_api_v1_subcategories_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SimpleCreate"];
+                "application/json": components["schemas"]["SubcategoryCreate"];
             };
         };
         responses: {
@@ -2072,7 +2116,9 @@ export interface operations {
     api_delete_subcategory_api_v1_subcategories__id__delete: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 id: string;
             };
@@ -2103,7 +2149,9 @@ export interface operations {
     api_update_subcategory_api_v1_subcategories__id__patch: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 id: string;
             };
@@ -2111,7 +2159,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SimpleUpdate"];
+                "application/json": components["schemas"]["SubcategoryUpdate"];
             };
         };
         responses: {
@@ -2158,7 +2206,9 @@ export interface operations {
     api_create_region_api_v1_regions_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2222,7 +2272,9 @@ export interface operations {
     api_delete_region_api_v1_regions__id__delete: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 id: string;
             };
@@ -2253,7 +2305,9 @@ export interface operations {
     api_update_region_api_v1_regions__id__patch: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 id: string;
             };
@@ -2288,7 +2342,9 @@ export interface operations {
     api_bulk_regions_api_v1_regions_bulk_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2341,7 +2397,9 @@ export interface operations {
     api_create_unit_api_v1_units_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2405,7 +2463,9 @@ export interface operations {
     api_delete_unit_api_v1_units__id__delete: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 id: string;
             };
@@ -2436,7 +2496,9 @@ export interface operations {
     api_update_unit_api_v1_units__id__patch: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 id: string;
             };
@@ -2471,7 +2533,9 @@ export interface operations {
     api_bulk_units_api_v1_units_bulk_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2524,7 +2588,9 @@ export interface operations {
     api_create_nutrient_type_api_v1_nutrient_types_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2588,7 +2654,9 @@ export interface operations {
     api_delete_nutrient_type_api_v1_nutrient_types__id__delete: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 id: string;
             };
@@ -2619,7 +2687,9 @@ export interface operations {
     api_update_nutrient_type_api_v1_nutrient_types__id__patch: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 id: string;
             };
@@ -2654,7 +2724,9 @@ export interface operations {
     api_bulk_nutrient_types_api_v1_nutrient_types_bulk_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2707,13 +2779,15 @@ export interface operations {
     api_create_nutrient_name_api_v1_nutrient_names_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SimpleCreate"];
+                "application/json": components["schemas"]["NutrientNameCreate"];
             };
         };
         responses: {
@@ -2771,7 +2845,9 @@ export interface operations {
     api_delete_nutrient_name_api_v1_nutrient_names__id__delete: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 id: string;
             };
@@ -2802,7 +2878,9 @@ export interface operations {
     api_update_nutrient_name_api_v1_nutrient_names__id__patch: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path: {
                 id: string;
             };
@@ -2810,7 +2888,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["SimpleUpdate"];
+                "application/json": components["schemas"]["NutrientNameUpdate"];
             };
         };
         responses: {
@@ -2837,7 +2915,9 @@ export interface operations {
     api_bulk_nutrient_names_api_v1_nutrient_names_bulk_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -3522,16 +3602,18 @@ export interface operations {
             };
         };
     };
-    register_api_v1_auth_register_post: {
+    optimize_recipe_endpoint_api_v1_calculator_optimize_recipe_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                authorization?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["RegisterRequest"];
+                "application/json": components["schemas"]["OptimizeRecipeRequest"];
             };
         };
         responses: {
@@ -4168,39 +4250,6 @@ export interface operations {
             };
         };
     };
-    delete_user_permanently_api_v1_users__id__permanent_delete: {
-        parameters: {
-            query?: never;
-            header?: {
-                authorization?: string | null;
-            };
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
     demo_ping_api_v1_demo_ping_get: {
         parameters: {
             query?: never;
@@ -4499,41 +4548,6 @@ export interface operations {
         responses: {
             /** @description Successful Response */
             200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    create_app_version_api_v1_admin_app_versions_post: {
-        parameters: {
-            query?: never;
-            header?: {
-                authorization?: string | null;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AppVersionCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            201: {
                 headers: {
                     [name: string]: unknown;
                 };

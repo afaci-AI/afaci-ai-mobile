@@ -7,6 +7,7 @@ import { Heading } from '@/shared/ui/heading'
 import { Icon } from '@/shared/ui/icon'
 import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 interface HeaderProps {
   title: string
@@ -43,11 +44,11 @@ export function Header({
       ) : null}
 
       <Box className="flex-1">
-        <Heading size="lg" className="text-foreground">
+        <Heading size={FontSize.lg} className="text-foreground">
           {title}
         </Heading>
         {subtitle ? (
-          <Text size="sm" className="text-muted-foreground">
+          <Text size={FontSize.sm} className="text-muted-foreground">
             {subtitle}
           </Text>
         ) : null}

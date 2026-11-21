@@ -1,6 +1,7 @@
 import { cn } from '@/shared/lib/cn'
 import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 interface ChipProps {
   label: string
@@ -31,7 +32,7 @@ export function Chip({
       )}
     >
       <Text
-        size="sm"
+        size={FontSize.sm}
         className={selected ? 'text-primary-foreground' : 'text-foreground'}
       >
         {label}

@@ -5,6 +5,7 @@ import { Icon } from '@/shared/ui/icon'
 import { Text } from '@/shared/ui/text'
 
 import { Button } from './button'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 interface ErrorStateProps {
   message: string
@@ -23,7 +24,7 @@ export function ErrorState({
     <Box className="items-center justify-center gap-3 px-6 py-12">
       <Icon as={AlertCircle} size="xl" className="text-destructive" />
       <Text className="text-center text-foreground">{title}</Text>
-      <Text size="sm" className="text-center text-muted-foreground">
+      <Text size={FontSize.sm} className="text-center text-muted-foreground">
         {message}
       </Text>
       {onRetry ? (

@@ -1,6 +1,7 @@
 import { Box } from '@/shared/ui/box'
 import { Spinner } from '@/shared/ui/spinner'
 import { Text } from '@/shared/ui/text'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 interface LoadingViewProps {
   label?: string
@@ -21,7 +22,7 @@ export function LoadingView({
       }
     >
       <Spinner className="text-primary" />
-      <Text size="sm" className="text-muted-foreground">
+      <Text size={FontSize.sm} className="text-muted-foreground">
         {label}
       </Text>
     </Box>

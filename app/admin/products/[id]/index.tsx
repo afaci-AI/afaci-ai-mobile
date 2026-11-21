@@ -1,1 +1,1 @@
-export { AdminProductDetailScreen as default } from '@/modules/admin/product-detail-screen'
+export { AdminProductDetailScreen as default } from '@/features/admin'
