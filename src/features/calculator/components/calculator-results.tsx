@@ -8,7 +8,7 @@ import { Badge, Card } from '@/shared/ui/kit'
 import { Text } from '@/shared/ui/text'
 import { VStack } from '@/shared/ui/vstack'
 
-import { DailyNormsCard } from '@/features/norms'
+import { DailyNormsCard, OtherNormsCard } from '@/features/norms'
 
 import { aminoAcidName } from '../amino-acid-names'
 import type { ComputeResult } from '../types'
@@ -54,7 +54,11 @@ export const CalculatorResults = memo(function CalculatorResults({
       ) : null}
       {result.verdict ? <VerdictCard verdict={result.verdict} /> : null}
       {result.daily_norms ? (
-        <DailyNormsCard data={result.daily_norms} subject="рецептуры" />
+        <DailyNormsCard
+          data={result.daily_norms}
+          subject="рецептуры"
+          withOther={false}
+        />
       ) : null}
       <Card>
         <Metric
@@ -94,7 +98,7 @@ export const CalculatorResults = memo(function CalculatorResults({
         </Text>
       </Card>
       <MacroChart
-        title="Макросостав"
+        title="Соотношение БЖУ"
         subtitle="Граммы на 100 г продукта"
         donut={false}
         values={[
@@ -182,6 +186,9 @@ export const CalculatorResults = memo(function CalculatorResults({
           value={`${nf(q.G)} г/100 г белка`}
         />
       </Card>
+      {result.daily_norms ? (
+        <OtherNormsCard rows={result.daily_norms.other} subject="рецептуры" />
+      ) : null}
     </VStack>
   )
 })

@@ -27,8 +27,10 @@ import {
   invalidateDictionaries,
   listDictionary,
   saveDictionaryEntry,
+  nutrientClassLabels,
   type AdminDictionaryEntry,
   type DictionaryKind,
+  type NutrientClass,
 } from './dictionaries-api'
 import { FontSize } from '@/shared/theme/font-sizes'
 
@@ -61,6 +63,10 @@ export function DictionaryDialog({
     entry?.category_id ?? entry?.nutrient_type_id ?? '',
   )
   const [unitId, setUnitId] = useState(entry?.unit_id ?? '')
+  // Пусто — класс берётся по типу нутриента на backend.
+  const [nutrientClass, setNutrientClass] = useState<NutrientClass | ''>(
+    entry?.nutrient_class ?? '',
+  )
   const [error, setError] = useState('')
   const [validation, setValidation] = useState(false)
   const [pending, setPending] = useState(false)
@@ -98,7 +104,11 @@ export function DictionaryDialog({
           ...(kind === 'subcategories'
             ? { category_id: parentId }
             : kind === 'nutrient-names'
-              ? { nutrient_type_id: parentId, unit_id: unitId }
+              ? {
+                  nutrient_type_id: parentId,
+                  unit_id: unitId,
+                  ...(nutrientClass ? { nutrient_class: nutrientClass } : {}),
+                }
               : {}),
         },
         entry?.id,
@@ -221,6 +231,25 @@ export function DictionaryDialog({
                   />
                 </FormField>
               )
+            ) : null}
+            {needsUnit ? (
+              <FormField
+                label="Класс"
+                hint="В каком блоке показывается нутриент. Пусто — по типу нутриента."
+              >
+                <Select
+                  options={(
+                    Object.keys(nutrientClassLabels) as NutrientClass[]
+                  ).map((value) => ({
+                    value,
+                    label: nutrientClassLabels[value],
+                  }))}
+                  value={nutrientClass}
+                  onChange={(value) => setNutrientClass(value as NutrientClass)}
+                  isDisabled={pending}
+                  placeholder="По типу нутриента"
+                />
+              </FormField>
             ) : null}
             {error ? (
               <Text accessibilityRole="alert" className="text-destructive-text">

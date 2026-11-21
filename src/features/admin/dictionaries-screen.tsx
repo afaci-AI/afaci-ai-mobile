@@ -26,6 +26,7 @@ import {
   invalidateDictionaries,
   isDictionaryKind,
   listDictionary,
+  nutrientClassLabels,
   type AdminDictionaryEntry,
   type DictionaryKind,
 } from './dictionaries-api'
@@ -201,6 +202,11 @@ function DictionaryScreen({ kind }: { kind: DictionaryKind }) {
                         : 'недоступна'
                       : 'не задана')
                   }`}
+                </Text>
+              ) : null}
+              {kind === 'nutrient-names' && item.nutrient_class ? (
+                <Text size={FontSize.sm} className="text-muted-foreground">
+                  {`Класс: ${nutrientClassLabels[item.nutrient_class]}`}
                 </Text>
               ) : null}
               {canEdit ? (

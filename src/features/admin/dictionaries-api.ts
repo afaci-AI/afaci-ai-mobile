@@ -11,6 +11,13 @@ export const dictionaryLabels = {
   units: 'Единицы нутриентов',
 } as const
 export type DictionaryKind = keyof typeof dictionaryLabels
+export const nutrientClassLabels = {
+  macro: 'Макросостав',
+  micro: 'Микросостав',
+  amino: 'Белок и аминокислоты',
+  other: 'Прочее',
+} as const
+export type NutrientClass = keyof typeof nutrientClassLabels
 export interface AdminDictionaryEntry {
   id: string
   name: string
@@ -18,12 +25,15 @@ export interface AdminDictionaryEntry {
   nutrient_type_id?: string
   /** Единица измерения нутриента (только для `nutrient-names`). */
   unit_id?: string | null
+  /** Класс показа нутриента (только для `nutrient-names`). */
+  nutrient_class?: NutrientClass
 }
 export interface DictionaryInput {
   name: string
   category_id?: string
   nutrient_type_id?: string
   unit_id?: string
+  nutrient_class?: NutrientClass
 }
 export function isDictionaryKind(value: string): value is DictionaryKind {
   return Object.hasOwn(dictionaryLabels, value)
