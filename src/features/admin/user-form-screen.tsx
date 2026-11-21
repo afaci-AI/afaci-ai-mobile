@@ -65,7 +65,6 @@ function UserForm({ user, onBack }: { user?: User; onBack: () => void }) {
   const self = user?.id === owner
   const [name, setName] = useState(user?.name ?? '')
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [role, setRole] = useState<UserRole>(user?.role ?? 'viewer')
   const [unlimited, setUnlimited] = useState(!user?.accessExpiresAt)
   const [expiry, setExpiry] = useState(() =>
@@ -73,7 +72,6 @@ function UserForm({ user, onBack }: { user?: User; onBack: () => void }) {
       ? new Date(user.accessExpiresAt)
       : new Date(Date.now() + 30 * 86400000),
   )
-  const [mustChange, setMustChange] = useState(true)
   const [submitted, setSubmitted] = useState(false)
   const [validationTime, setValidationTime] = useState(() => Date.now())
   const client = useQueryClient()
@@ -84,7 +82,6 @@ function UserForm({ user, onBack }: { user?: User; onBack: () => void }) {
       !user && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
         ? 'Укажите корректный email.'
         : undefined,
-    password: !user && password.length < 6 ? 'Не менее 6 символов.' : undefined,
     expiry:
       !unlimited &&
       (!Number.isFinite(expiry.getTime()) || expiry.getTime() <= validationTime)
@@ -104,14 +101,10 @@ function UserForm({ user, onBack }: { user?: User; onBack: () => void }) {
         access_expires_at: unlimited ? null : expiry.toISOString(),
         ...(user
           ? { access_expires_at_unlimited: unlimited }
-          : {
-              email: email.trim(),
-              password,
-              must_change_password: mustChange,
-            }),
+          : { email: email.trim() }),
       })
     },
-    onSuccess: async (saved) => {
+    onSuccess: async ({ user: saved, credentialsEmail }) => {
       if (useSession.getState().user?.id !== owner) return
       await client.invalidateQueries({ queryKey: ['admin', 'users'] })
       if (
@@ -120,9 +113,18 @@ function UserForm({ user, onBack }: { user?: User; onBack: () => void }) {
       )
         return
       if (self) useSession.setState({ user: saved })
-      toast.success({
-        title: user ? 'Пользователь сохранён' : 'Пользователь создан',
-      })
+      if (credentialsEmail && !credentialsEmail.sent)
+        toast.error({
+          title: 'Пользователь создан, но письмо не отправлено',
+          description: `${credentialsEmail.error ?? ''} Повторите отправку кнопкой с конвертом в списке.`,
+        })
+      else
+        toast.success({
+          title: user ? 'Пользователь сохранён' : 'Пользователь создан',
+          description: user
+            ? undefined
+            : `Логин и временный пароль отправлены на ${saved.email}`,
+        })
       onBack()
     },
   })
@@ -179,27 +181,11 @@ function UserForm({ user, onBack }: { user?: User; onBack: () => void }) {
               isDisabled={save.isPending}
             />
           </FormField>
-          <FormField
-            label="Временный пароль"
-            isRequired
-            error={submitted ? errors.password : undefined}
-          >
-            <Input
-              accessibilityLabel="Временный пароль"
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-              value={password}
-              onChangeText={setPassword}
-              isDisabled={save.isPending}
-            />
-          </FormField>
-          <SwitchRow
-            label="Сменить пароль при входе"
-            value={mustChange}
-            onValueChange={setMustChange}
-            isDisabled={save.isPending}
-          />
+          <Text className="rounded-md border border-dashed border-border p-3 text-muted-foreground">
+            Пароль задавать не нужно: система создаст временный и отправит его
+            вместе с логином на этот email. При первом входе пользователь задаст
+            собственный пароль.
+          </Text>
         </>
       )}
       <FormField label="Роль">
