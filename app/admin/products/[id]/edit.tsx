@@ -1,4 +1,4 @@
-import { ProductFormScreen } from '@/modules/admin/product-form-screen'
+import { ProductFormScreen } from '@/features/admin'
 export default function EditProduct() {
   return <ProductFormScreen edit />
 }

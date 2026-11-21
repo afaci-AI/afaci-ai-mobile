@@ -5,7 +5,7 @@ import {
   X,
   type LucideIcon,
 } from 'lucide-react-native'
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import {
   ReduceMotion,
   SlideInDown,
@@ -28,6 +28,7 @@ import {
 import { Pressable } from '@/shared/ui/pressable'
 import { Text } from '@/shared/ui/text'
 import { Input } from './input'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 export interface SelectOption {
   label: string
@@ -42,11 +43,15 @@ interface SelectProps {
   placeholder?: string
   isDisabled?: boolean
   isInvalid?: boolean
+  searchable?: boolean
+  listHeader?: ReactNode
+  selectedLabel?: string
+  emptyMessage?: string
   /** Compact selected value; trigger touch target stays 48 dp. */
-  selectedTextSize?: 'sm'
+  selectedTextSize?: typeof FontSize.sm
 }
 
-/** Searchable bottom panel shared by dictionary and form selections. */
+/** Bottom panel with optional search, shared by dictionary and form selections. */
 export function Select({
   leadingIcon,
   options,
@@ -56,17 +61,23 @@ export function Select({
   isDisabled,
   isInvalid,
   selectedTextSize,
+  searchable = true,
+  listHeader,
+  selectedLabel: suppliedLabel,
+  emptyMessage,
 }: SelectProps) {
   const insets = useSafeAreaInsets()
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
-  const selectedLabel = options.find((option) => option.value === value)?.label
+  const selectedLabel =
+    suppliedLabel ?? options.find((option) => option.value === value)?.label
   const query = search.trim().toLocaleLowerCase('ru-RU')
-  const filtered = query
-    ? options.filter((option) =>
-        option.label.toLocaleLowerCase('ru-RU').includes(query),
-      )
-    : options
+  const filtered =
+    searchable && query
+      ? options.filter((option) =>
+          option.label.toLocaleLowerCase('ru-RU').includes(query),
+        )
+      : options
   const close = () => setOpen(false)
 
   return (
@@ -74,7 +85,9 @@ export function Select({
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={selectedLabel || placeholder}
-        accessibilityHint="Открывает список с поиском"
+        accessibilityHint={
+          searchable ? 'Открывает список с поиском' : 'Открывает список'
+        }
         accessibilityState={{ disabled: Boolean(isDisabled), expanded: open }}
         disabled={isDisabled}
         className={cn(
@@ -91,7 +104,7 @@ export function Select({
           <Icon as={leadingIcon} className="text-muted-foreground" />
         ) : null}
         <Text
-          size={selectedTextSize ?? 'md'}
+          size={selectedTextSize ?? FontSize.md}
           numberOfLines={1}
           className={cn(
             'min-w-0 flex-1',
@@ -121,7 +134,7 @@ export function Select({
         >
           <Box className="mb-3 h-1 w-12 self-center rounded-full bg-muted" />
           <ModalHeader className="mb-3 gap-3">
-            <Heading size="md" className="flex-1 text-foreground">
+            <Heading size={FontSize.md} className="flex-1 text-foreground">
               {placeholder}
             </Heading>
             <IconButton
@@ -134,16 +147,19 @@ export function Select({
               <ButtonIcon as={X} />
             </IconButton>
           </ModalHeader>
-          <Input
-            leadingIcon={Search}
-            accessibilityLabel="Поиск в списке"
-            placeholder="Поиск по названию"
-            value={search}
-            onChangeText={setSearch}
-            autoCorrect={false}
-            autoCapitalize="none"
-            returnKeyType="search"
-          />
+          {searchable ? (
+            <Input
+              leadingIcon={Search}
+              accessibilityLabel="Поиск в списке"
+              placeholder="Поиск по названию"
+              value={search}
+              onChangeText={setSearch}
+              autoCorrect={false}
+              autoCapitalize="none"
+              returnKeyType="search"
+            />
+          ) : null}
+          {listHeader}
           <FlatList
             className="mt-3 flex-1"
             data={filtered}
@@ -152,7 +168,8 @@ export function Select({
             keyboardDismissMode="on-drag"
             ListEmptyComponent={
               <Text className="px-3 py-6 text-muted-foreground">
-                {options.length ? 'Ничего не найдено.' : 'Список пока пуст.'}
+                {emptyMessage ??
+                  (options.length ? 'Ничего не найдено.' : 'Список пока пуст.')}
               </Text>
             }
             renderItem={({ item }) => (

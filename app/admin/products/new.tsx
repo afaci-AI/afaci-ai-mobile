@@ -1,1 +1,1 @@
-export { ProductFormScreen as default } from '@/modules/admin/product-form-screen'
+export { ProductFormScreen as default } from '@/features/admin'

@@ -8,6 +8,7 @@ import { Box } from '@/shared/ui/box'
 import { Card } from '@/shared/ui/kit'
 import { Heading } from '@/shared/ui/heading'
 import { Text } from '@/shared/ui/text'
+import { FontSize } from '@/shared/theme/font-sizes'
 
 interface MacroChartProps {
   values: {
@@ -64,10 +65,10 @@ export const MacroChart = memo(function MacroChart({
 
   return (
     <Card>
-      <Heading size="lg" className="text-foreground">
+      <Heading size={FontSize.lg} className="text-foreground">
         {title}
       </Heading>
-      <Text size="sm" className="text-muted-foreground">
+      <Text size={FontSize.sm} className="text-muted-foreground">
         {subtitle}
       </Text>
       {chartData.length > 0 && sameUnit ? (
@@ -91,7 +92,7 @@ export const MacroChart = memo(function MacroChart({
           />
         </Box>
       ) : (
-        <Text size="sm" className="text-muted-foreground">
+        <Text size={FontSize.sm} className="text-muted-foreground">
           {complete && sameUnit && available.every((item) => item.value === 0)
             ? 'Все значения равны 0 — доли отсутствуют.'
             : 'Недостаточно значений в одной единице измерения для графика.'}
@@ -120,7 +121,7 @@ export const MacroChart = memo(function MacroChart({
       </Box>
       {footer}
       {!complete ? (
-        <Text size="sm" className="text-muted-foreground">
+        <Text size={FontSize.sm} className="text-muted-foreground">
           Состав неполный: показаны только доступные значения. Отсутствующие или
           некорректные значения обозначены прочерком.
         </Text>

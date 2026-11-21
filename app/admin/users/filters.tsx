@@ -1,1 +1,1 @@
-export { default } from '@/modules/admin/user-filters-screen'
+export { UserFiltersScreen as default } from '@/features/admin'

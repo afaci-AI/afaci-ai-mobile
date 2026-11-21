@@ -1,1 +1,1 @@
-export { SavedScreen as default } from '@/modules/saved/saved-screen'
+export { SavedScreen as default } from '@/features/saved'

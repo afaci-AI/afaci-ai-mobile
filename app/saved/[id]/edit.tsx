@@ -1,1 +1,1 @@
-export { RecipeEditScreen as default } from '@/modules/saved/recipe-edit-screen'
+export { RecipeEditScreen as default } from '@/features/saved'

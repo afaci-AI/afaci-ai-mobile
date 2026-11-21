@@ -1,1 +1,1 @@
-export { RecipeDetailScreen as default } from '@/modules/saved/recipe-detail-screen'
+export { RecipeDetailScreen as default } from '@/features/saved'

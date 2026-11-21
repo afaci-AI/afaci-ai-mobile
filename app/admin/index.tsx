@@ -1,1 +1,1 @@
-export { default } from '@/modules/admin/dashboard-screen'
+export { DashboardScreen as default } from '@/features/admin'

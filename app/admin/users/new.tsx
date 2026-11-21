@@ -1,1 +1,1 @@
-export { AdminUserFormScreen as default } from '@/modules/admin/user-form-screen'
+export { AdminUserFormScreen as default } from '@/features/admin'
