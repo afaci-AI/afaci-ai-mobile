@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router'
 import { CalculatorResults } from './components/calculator-results'
 import { metricDifferences, useCalculatorReport } from './report-store'
+import { hasRequiredSum } from '@/shared/lib/recipe-sum'
 import { useSession } from '@/shared/session/store'
 import { Text } from '@/shared/ui/text'
 import { Button, EmptyState, Header, ScrollScreen } from '@/shared/ui/kit'
@@ -23,9 +24,7 @@ export default function CalculatorResultScreen() {
   return (
     <ScrollScreen>
       <Header title="Результат расчёта" onBack={back} />
-      {ownerId === user?.id &&
-      result &&
-      Math.abs(result.sum_g - 100) >= 1e-8 ? (
+      {ownerId === user?.id && result && !hasRequiredSum(result.sum_g) ? (
         <Text className="text-destructive-text">
           Сервер округлил массы. Перед повторным расчётом и сохранением готовой
           рецептуры скорректируйте сумму до 100 г.

@@ -21,11 +21,6 @@ export function sumAmounts(rows: CalculatorRow[]): number {
   return rows.reduce((sum, row) => sum + (parseNumberInput(row.amount) ?? 0), 0)
 }
 
-/** Numerical epsilon only: the UI requires 100 g, not an acceptance band. */
-export function hasRequiredSum(sum: number): boolean {
-  return Number.isFinite(sum) && Math.abs(sum - 100) < 1e-8
-}
-
 /** Prices are per kilogram; amount is grams. Result is cost of this batch. */
 export function totalCost(rows: CalculatorRow[]): number | null {
   if (!rows.length) return null

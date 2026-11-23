@@ -6,6 +6,7 @@ import { Info, Plus, Save } from 'lucide-react-native'
 
 import { useSession } from '@/shared/session/store'
 import { formatNumber, formatSom } from '@/shared/lib/format'
+import { hasRequiredSum } from '@/shared/lib/recipe-sum'
 import { Box } from '@/shared/ui/box'
 import {
   Button as IconButton,
@@ -123,7 +124,7 @@ export function CalculatorScreen() {
       (r) => r.product_id && (parseNumberInput(r.amount) ?? -1) >= 0,
     ) &&
     new Set(s.rows.map((r) => r.product_id)).size === s.rows.length
-  const sumValid = Math.abs(sum - 100) < 1e-8
+  const sumValid = hasRequiredSum(sum)
   const validPrices =
     !s.costEnabled ||
     s.rows.every((r) => (parseNumberInput(r.price) ?? -1) >= 0)
@@ -187,8 +188,7 @@ export function CalculatorScreen() {
         if (!loadedItems.length) {
           setError('В рецептуре нет ингредиентов: расчёт невозможен.')
         } else if (
-          Math.abs(loadedItems.reduce((t, i) => t + i.amount_g, 0) - 100) >=
-          1e-8
+          !hasRequiredSum(loadedItems.reduce((t, i) => t + i.amount_g, 0))
         ) {
           setError(
             'Сумма состава не равна 100 г (рецептура сохранена как черновик): расчёт невозможен. Скорректируйте массы.',
@@ -358,7 +358,7 @@ export function CalculatorScreen() {
         (sum, item) => sum + item.amount_g,
         0,
       )
-      if (Math.abs(optimizedSum - 100) >= 1e-8)
+      if (!hasRequiredSum(optimizedSum))
         setError(
           'Сервер округлил оптимальные массы. Скорректируйте сумму до 100 г перед повторным расчётом или сохранением готовой рецептуры.',
         )
